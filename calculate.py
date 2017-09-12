@@ -1,5 +1,3 @@
-
-
 def revenue_profit(revenue, old_cost, new_cost):
     """Calculate profits and revenue for every date """
     profit_proc = (new_cost - old_cost) / new_cost
@@ -31,6 +29,6 @@ def profit(new_cost, **kwargs):
     return profit
 
 
-profit = close.apply(profit_collum, args=(30.480000, 1200,))
-new_revenue.resample('M').mean()
+# profit = close.apply(profit_collum, args=(30.480000, 1200,))
+# new_revenue.resample('M').mean()
 # closeP = panel_data.loc[:,"Close"]
