@@ -1,0 +1,69 @@
+<html>
+   <head>
+      <title>Highcharts Tutorial</title>
+      <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+      </script>
+      <script src = "https://code.highcharts.com/highcharts.js"></script>
+   </head>
+
+   <body>
+      <div id = "container" style = "width: 550px; height: 400px; margin: 0 auto"></div>
+      <script type=text/javascript>
+
+             var title = {
+                text: {{ stock|tojson }}
+             };
+             var subtitle = {
+                text: "Profit and revenue"
+             };
+             var xAxis: {
+               type: 'datetime'
+             };
+             var yAxis = {
+                title: {
+                   text: 'USD'
+                }
+             };
+            //  var tooltip = {
+            //     valueSuffix: '\xB0C'
+            //  }
+             var legend = {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+             };
+            //  var plotOptions: {
+            //    series: {
+            //      pointStart: 2010
+            //    };
+             var series =  [{
+                   name: 'profit',
+                   data: {{ profit|tojson }},
+                   pointStart: Date.UTC(2012, 0, 1),
+                   pointInterval: 24 * 3600 * 1000,
+                },
+                {
+                   name: 'revenue',
+                   data: {{ revenue|tojson }},
+                   pointStart: Date.UTC(2012, 0, 1),
+                   pointInterval: 24 * 3600 * 1000
+                }
+             ];
+
+             var json = {};
+             json.title = title;
+             json.subtitle = subtitle;
+             json.xAxis = xAxis;
+             json.yAxis = yAxis;
+            //  json.tooltip = tooltip;
+             json.legend = legend;
+             json.series = series;
+            //  json.plotOptions=plotOptions
+            // var chart = new Highcharts.Chart(json)
+
+             $('#container').highcharts(json);
+       </script>
+   </body>
+
+</html>
