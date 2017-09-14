@@ -5,11 +5,6 @@ from calculate import profit_collum, revenue_collum
 from collections import namedtuple
 
 
-# test1 = web.DataReader('GOOG', 'yahoo', start_date, end_date)
-def get_data():
-    pass
-
-
 def earnings_stocks(stock_id, start_date, revenue):
     # end_date = format(datetime.date.today(), '%Y-%m-%d')
     StockHandle = namedtuple('StockData', 'stock_id, data_start, revenue')
@@ -27,20 +22,45 @@ def earnings_stocks(stock_id, start_date, revenue):
     stock.fillna(method='ffill')
     # close = stock.loc[:, "Close"]
     close = stock.Close
-    old_cost = close[0]
+    old_cost = float(close[0])
+    print(type(old_cost))
     profit = close.apply(profit_collum, args=(old_cost, revenue))
     new_revenue = profit.apply(revenue_collum, args=(revenue,))
     month_revenue = new_revenue.resample('M').mean()
     month_profit = profit.resample('M').mean()
+    # print(month_revenue, month_profit)
     return month_revenue, month_profit
     # return month_revenue.tolist(), month_profit.tolist()
 # month = stock.groupby(pandas.Grouper(freq='M')).sum()
 # month = stock.groupby(pandas.TimeGrouper(freq='M')).agg(numpy.sum)
 
+def earnings_stocks_test(stock_id, start_date, revenue):
+    # end_date = format(datetime.date.today(), '%Y-%m-%d')
+    StockHandle = namedtuple('StockData', 'stock_id, data_start, revenue')
+    revenue = float(revenue)
+    end = datetime.date.today()
+    try:
+        start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        stock = web.DataReader(stock_id, 'yahoo', start, end)
+    except RemoteDataError as e:
+        stock = web.DataReader(stock_id, 'yahoo', start, end)
+    # except (TypeError, ValueError) as e:
+    #     return("""data does not match format '%Y-%m-%d'""")
+    # except ValueError as e:
+    #     raise e("""data does not match format '%Y-%m-%d'""")
+    # print(month_revenue, month_profit)
+    return stock
+
 def total_earnings_profit(*args):
     return sum(list(args))
 
 
+# appl = earnings_stocks_test('AAPL', '2016-12-24', 1200.0)
+# googl = earnings_stocks_test('GOOG', '2001-01-01', 500.0)
+# amzn = earnings_stocks_test('AMZN', '2012-01-01', 150.0)
+# stocks_all = pd.DataFrame({"AAPL": stock1["Close"], "MSFT": stock2["Close"],"GOOG": stock3["Close"]})
+# old_cost2 = stock2.Close[0]                                                                      │
+# profit2 = exp.MSFT.apply(profit_collum, args=(old_cost, 150))
 def total_earnings_revenue(*args):
     return sum(list(args))
 

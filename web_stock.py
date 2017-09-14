@@ -4,6 +4,10 @@ from collections import namedtuple
 import pandas
 from stocks_portfolio import earnings_stocks
 import datetime
+from highcharts import Highchart
+import pandas_datareader.data as web
+from pandas_datareader.base import RemoteDataError
+from calculate import profit_collum, revenue_collum
 app = Flask(__name__)
 
 
@@ -30,28 +34,22 @@ def stocks():
 
         data = request.form["textcontent"]
         parse_item = parse_str(data)
-        v, p = earnings_stocks(
-            parse_item[0].stock_id,
-            parse_item[0].data_start,
-            parse_item[0].revenue
-         )
-        date_str = parse_item[0].data_start
-        date = datetime.datetime.strptime(date_str, '%Y-%m-%d').year
-        name = parse_item[0].stock_id
-        date = [str(item.year) + '-' + str(item.month) for item in v.index]
-        data_line = {
-            "profit": p.tolist(),
-            "revenue": v.tolist(),
-            "title": name,
-            "date": date
-            }
+        first_list = get_frames(parse_item)
+        dataframe = get_dataframe(first_list)
+        all_data = new_stocks(first_list, dataframe)
+        total_profit = sum([item.profit for item in all_data])
+        total_revenue = sum([item.revenue for item in all_data])
+        period = ['{}-{}'.format(str(item.year),
+                  str(item.month)) for item in total_revenue.index]
+        create_diagramm(
+            all_data,
+            total_profit.tolist(),
+            total_revenue.tolist(),
+            period
+            )
 
         return render_template(
-            'stock.html',
-            stock=data_line["title"],
-            profit=data_line["profit"],
-            revenue=data_line["revenue"],
-            date=data_line["date"]
+            'stock_hero.html'
             )
 
 
@@ -93,21 +91,92 @@ def display(name='Varvara'):
                         1532.5443756875277]
 
             }
-        return render_template(
-            'stock.html',
-            stock=title_data["title"],
-            profit=title_data["profit"],
-            revenue=title_data["revenue"],
-            date=title_data["cat"]
+        return render_template('my_line.html')
+
+
+def get_stock(stock_id, start_date):
+    end = datetime.date.today()
+    try:
+        start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        stock = web.DataReader(stock_id, 'yahoo', start, end)
+    except RemoteDataError as e:
+        stock = web.DataReader(stock_id, 'yahoo', start, end)
+    return stock.Close
+
+
+def get_frames(parse_item):
+    StockAllData = namedtuple('StockAllData',
+                              'stock_id, revenue, stock, first_cost')
+    all_list = []
+    for item in parse_item:
+        stock = get_stock(
+            item.stock_id,
+            item.data_start
+         )
+        frame = StockAllData(
+            stock_id=item.stock_id,
+            revenue=float(item.revenue),
+            stock=stock,
+            first_cost=float(stock[0]))
+        all_list.append(frame)
+    return all_list
+
+
+def get_dataframe(all_list):
+    fdict = {item.stock_id: item.stock for item in all_list}
+    stocks_all = pandas.DataFrame(fdict)
+    stocks_all = stocks_all.fillna(0)
+    month = stocks_all.resample('M').mean()
+    return month
+
+
+def new_stocks(all_list, stocks_all):
+    Stocks = namedtuple('Stocks', 'stock_id, profit, revenue')
+    new_list = []
+    for item in all_list:
+        profit = stocks_all[item.stock_id].apply(
+            profit_collum,
+            args=(item.first_cost, item.revenue)
+         )
+        diff_revenue = profit.apply(revenue_collum, args=(item.revenue,))
+        new_stock = Stocks(
+            stock_id=item.stock_id,
+            profit=profit,
+            revenue=diff_revenue
             )
+        new_list.append(new_stock)
+    return new_list
 
 
 def parse_str(data):
     parse_data = data.split('\r\n')
     parse = [item.split("=") for item in parse_data]
     StockData = namedtuple('StockData', 'stock_id, data_start, revenue')
-    parse_item = [StockData(item[0], item[1], item[2]) for item in parse]
+    parse_item = [StockData(item[0], item[1], float(item[2]))
+                  for item in parse]
     return parse_item
+
+
+def create_diagramm(all_list, profit, revenue, period):
+    H = Highchart()
+    H.set_options('title', {'text': "Calculate profil of stocks"})
+    for item in all_list:
+        H.add_data_set(item.profit.tolist(), 'line', 'Profit {}'.format(
+            item.stock_id)
+            )
+        H.add_data_set(item.revenue.tolist(), 'line', 'Revenue {}'.format(
+            item.stock_id)
+            )
+    H.add_data_set(profit, 'line', 'TOTAL PROFIT')
+    H.add_data_set(revenue, 'line', 'TOTAL REVENUE')
+    H.set_options('yAxis', {'title': {'text': 'USD'},
+                  'plotLines': {'value': 0, 'width': 1, 'color': '#808080'}})
+    H.set_options('xAxis', {'categories': period})
+    # H.set_options('legend', {'layout': 'vertical',
+    #                          'align': 'right',
+    #                          'verticalAlign': 'middle',
+    #                          'borderWidth': 0})
+    H.save_file("templates/stock_hero")
 
 
 if __name__ == "__main__":
