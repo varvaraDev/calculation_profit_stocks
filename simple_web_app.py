@@ -1,10 +1,12 @@
-from flask import Flask, request, render_template
-from flask import json
-from collections import namedtuple
-import pandas
-from simple_stocks import earnings_stocks
 import datetime
+from collections import namedtuple
+
+import pandas
+from flask import Flask, json, render_template, request
 from highcharts import Highchart
+
+from simple_stocks import earnings_stocks
+
 app = Flask(__name__)
 
 
