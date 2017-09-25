@@ -95,6 +95,7 @@ def get_data_all(handle_stocks):
 
 
 def calculate_total(all_data, sort_profit):
+    """Return total revenue and profit"""
     if sort_profit:
         total = sum([item.profit for item in all_data])
     if not sort_profit:
