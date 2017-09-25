@@ -8,6 +8,7 @@ def revenue_profit(revenue, old_cost, new_cost):
 
 def profit_collum(new_cost, old_cost, revenue):
     """Calculate profits and revenue for every date """
+    new_cost = float(new_cost)
     profit_proc = (new_cost - old_cost) / new_cost
     profit = revenue*profit_proc
     return profit
