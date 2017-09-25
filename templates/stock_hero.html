@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link href="https://www.highcharts.com/highslide/highslide.css" rel="stylesheet" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>
+    </head>
+    <body style="margin:0;padding:0">
+                <div id="container" style="">Loading....</div>
+
+
+    <script>
+        $(function(){
+
+
+ 
+
+
+
+
+            Highcharts.setOptions({"lang": {}, "global": {}});
+            var option = {"yAxis": {"tickInterval": 250, "gridLineWidth": 2, "min": -500, "plotLines": [{"width": 1, "value": -250, "color": "#808080"}], "title": {"text": "USD"}}, "legend": {"layout": "horizontal", "align": "center", "borderWidth": 0, "verticalAlign": "bottom"}, "title": {"text": "Calculate profil of stocks"}, "colors": {}, "credits": {"enabled": false}, "navigation": {}, "chart": {"renderTo": "container"}, "labels": {}, "loading": {}, "exporting": {}, "series": {}, "tooltip": {}, "xAxis": {"type": "datetime", "categories": ["2008-12", "2009-1", "2009-2", "2009-3", "2009-4", "2009-5", "2009-6", "2009-7", "2009-8", "2009-9", "2009-10", "2009-11", "2009-12", "2010-1", "2010-2", "2010-3", "2010-4", "2010-5", "2010-6", "2010-7", "2010-8", "2010-9", "2010-10", "2010-11", "2010-12", "2011-1", "2011-2", "2011-3", "2011-4", "2011-5", "2011-6", "2011-7", "2011-8", "2011-9", "2011-10", "2011-11", "2011-12", "2012-1", "2012-2", "2012-3", "2012-4", "2012-5", "2012-6", "2012-7", "2012-8", "2012-9", "2012-10", "2012-11", "2012-12", "2013-1", "2013-2", "2013-3", "2013-4", "2013-5", "2013-6", "2013-7", "2013-8", "2013-9", "2013-10", "2013-11", "2013-12", "2014-1", "2014-2", "2014-3", "2014-4", "2014-5", "2014-6", "2014-7", "2014-8", "2014-9", "2014-10", "2014-11", "2014-12", "2015-1", "2015-2", "2015-3", "2015-4", "2015-5", "2015-6", "2015-7", "2015-8", "2015-9", "2015-10", "2015-11", "2015-12", "2016-1", "2016-2", "2016-3", "2016-4", "2016-5", "2016-6", "2016-7", "2016-8", "2016-9", "2016-10", "2016-11", "2016-12", "2017-1", "2017-2", "2017-3", "2017-4", "2017-5", "2017-6", "2017-7", "2017-8", "2017-9"]}, "plotOptions": {}, "subtitle": {}, "drilldown": {}, "pane": {}};
+
+
+            var data = [{"name": "Profit AAPL", "type": "line", "data": [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1.01, 30.61, 154.31, 205.65, 221.44, 281.48, 254.17, 257.15, 320.72, 324.39]}, {"name": "Revenue AAPL", "type": "line", "data": [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1201.01, 1230.61, 1354.31, 1405.65, 1421.44, 1481.48, 1454.17, 1457.15, 1520.72, 1524.39]}, {"name": "Profit GOOG", "type": "line", "data": [0.0, 17.43, 59.99, 31.96, 92.71, 115.47, 137.02, 140.0, 164.08, 179.98, 209.89, 228.67, 243.32, 234.14, 212.42, 225.82, 223.87, 190.7, 182.49, 174.77, 179.07, 188.95, 232.92, 244.48, 239.97, 250.06, 250.63, 235.81, 222.62, 209.41, 194.13, 231.9, 218.86, 210.95, 226.17, 241.23, 254.8, 249.83, 246.33, 254.77, 251.67, 245.91, 230.43, 241.93, 267.82, 285.85, 288.14, 270.45, 281.28, 290.48, 304.28, 311.95, 306.85, 324.53, 324.65, 329.35, 324.21, 326.25, 336.13, 350.78, 358.14, 364.64, 370.76, 369.94, 357.72, 356.13, 362.41, 368.44, 366.05, 367.96, 359.54, 358.49, 353.54, 350.05, 357.18, 362.72, 357.99, 357.23, 356.61, 370.5, 380.01, 376.34, 384.85, 396.09, 398.84, 393.65, 391.25, 394.9, 396.29, 392.7, 391.84, 394.7, 401.5, 401.22, 403.08, 400.32, 402.3, 405.42, 406.46, 408.39, 409.47, 418.65, 419.88, 418.95, 417.12, 417.7]}, {"name": "Revenue GOOG", "type": "line", "data": [500.0, 517.43, 559.99, 531.96, 592.71, 615.47, 637.02, 640.0, 664.08, 679.98, 709.89, 728.67, 743.32, 734.14, 712.42, 725.82, 723.87, 690.7, 682.49, 674.77, 679.07, 688.95, 732.92, 744.48, 739.97, 750.06, 750.63, 735.81, 722.62, 709.41, 694.13, 731.9, 718.86, 710.95, 726.17, 741.23, 754.8, 749.83, 746.33, 754.77, 751.67, 745.91, 730.43, 741.93, 767.82, 785.85, 788.14, 770.45, 781.28, 790.48, 804.28, 811.95, 806.85, 824.53, 824.65, 829.35, 824.21, 826.25, 836.13, 850.78, 858.14, 864.64, 870.76, 869.94, 857.72, 856.13, 862.41, 868.44, 866.05, 867.96, 859.54, 858.49, 853.54, 850.05, 857.18, 862.72, 857.99, 857.23, 856.61, 870.5, 880.01, 876.34, 884.85, 896.09, 898.84, 893.65, 891.25, 894.9, 896.29, 892.7, 891.84, 894.7, 901.5, 901.22, 903.08, 900.32, 902.3, 905.42, 906.46, 908.39, 909.47, 918.65, 919.88, 918.95, 917.12, 917.7]}, {"name": "Profit AMZN", "type": "line", "data": [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 4.86, 3.45, 8.31, 12.49, 28.42, 27.53, 30.15, 37.64, 44.99, 40.07, 35.44, 43.78, 49.94, 48.16, 48.95, 47.92, 47.79, 52.03, 60.18, 57.77, 61.87, 67.62, 76.39, 81.41, 81.99, 74.21, 75.95, 66.51, 61.36, 67.26, 71.0, 67.96, 68.7, 62.93, 65.73, 63.03, 61.3, 78.53, 78.45, 81.88, 87.1, 87.92, 93.9, 98.2, 98.45, 102.62, 109.17, 109.87, 105.32, 99.39, 103.08, 106.23, 111.5, 112.51, 113.78, 114.89, 115.96, 117.43, 114.82, 114.82, 116.74, 117.87, 118.56, 120.27, 122.08, 122.89, 123.37, 122.36, 122.52]}, {"name": "Revenue AMZN", "type": "line", "data": [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 154.86, 153.45, 158.31, 162.49, 178.42, 177.53, 180.15, 187.64, 194.99, 190.07, 185.44, 193.78, 199.94, 198.16, 198.95, 197.92, 197.79, 202.03, 210.18, 207.77, 211.87, 217.62, 226.39, 231.41, 231.99, 224.21, 225.95, 216.51, 211.36, 217.26, 221.0, 217.96, 218.7, 212.93, 215.73, 213.03, 211.3, 228.53, 228.45, 231.88, 237.1, 237.92, 243.9, 248.2, 248.45, 252.62, 259.17, 259.87, 255.32, 249.39, 253.08, 256.23, 261.5, 262.51, 263.78, 264.89, 265.96, 267.43, 264.82, 264.82, 266.74, 267.87, 268.56, 270.27, 272.08, 272.89, 273.37, 272.36, 272.52]}, {"name": "TOTAL PROFIT", "type": "line", "data": [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 518.13, 552.77, 678.64, 732.6, 751.18, 822.21, 796.94, 799.47, 860.2, 864.61]}, {"name": "TOTAL REVENUE", "type": "line", "data": [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2368.13, 2402.77, 2528.64, 2582.6, 2601.18, 2672.21, 2646.94, 2649.47, 2710.2, 2714.61]}];
+            option.series = data;
+
+ 
+
+            var chart = new Highcharts.Chart(option);
+
+
+
+
+
+ 
+
+
+        
+    });
+        </script>
+
+    </body>
+</html>

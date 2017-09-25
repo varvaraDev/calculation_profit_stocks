@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link href="https://www.highcharts.com/highslide/highslide.css" rel="stylesheet" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/modules/heatmap.js"></script>
+        <script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>
+    </head>
+    <body style="margin:0;padding:0">
+                <div id="container" style="">Loading....</div>
+
+
+    <script>
+        $(function(){
+
+
+ 
+
+
+
+
+            Highcharts.setOptions({"lang": {}, "global": {}});
+            var option = {"title": {"text": "GOOG"}, "drilldown": {}, "subtitle": {}, "labels": {}, "credits": {"enabled": false}, "loading": {}, "xAxis": {"categories": ["2016-12", "2017-1", "2017-2", "2017-3", "2017-4", "2017-5", "2017-6", "2017-7", "2017-8", "2017-9"], "type": "datetime", "gridLineWidth": 1}, "series": {}, "legend": {"borderWidth": 0, "verticalAlign": "bottom", "layout": "vertical", "align": "center"}, "yAxis": {"tickInterval": 250, "title": {"text": "USD"}, "plotLines": [{"width": 1, "value": -250, "color": "#808080"}], "gridLineWidth": 2}, "plotOptions": {}, "tooltip": {}, "colors": {}, "exporting": {}, "pane": {}, "navigation": {}, "chart": {"renderTo": "container"}};
+
+
+            var data = [{"name": "TOTAL PROFIT", "type": "line", "data": [0.9891805601149203, 30.354634041536485, 153.78925029878783, 205.50406011081373, 221.36660407586686, 281.13702062510134, 253.3704653538376, 256.7156508822362, 320.39978176099555, 333.9419327824898]}, {"name": "TOTAL REVENUE", "type": "line", "data": [1200.989180560115, 1230.3546340415364, -1353.7892502987881, 1405.5040601108137, 1421.3666040758667, 1481.137020625101, 1453.3704653538377, 1456.715650882236, 1520.399781760996, 1532.5443756875277]}];
+            option.series = data;
+
+ 
+
+            var chart = new Highcharts.Chart(option);
+
+
+
+
+
+ 
+
+
+        
+    });
+        </script>
+
+    </body>
+</html>

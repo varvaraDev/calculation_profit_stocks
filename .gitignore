@@ -1,3 +1,7 @@
-.python-version
-__pycache__/*
+
+.idea
+__pycache__/
 *.pyc
+.coverage
+*.js
+.python-version
