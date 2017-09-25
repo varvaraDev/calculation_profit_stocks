@@ -114,3 +114,32 @@ def get_stock(stock_id, start_date):
     except (TypeError, ValueError) as e:
         raise e
     return stock.Close
+
+
+def get_stock2(stock_id, start_date, revenue):
+    end = datetime.date.today()
+    try:
+        start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        data_stock = web.DataReader(stock_id, 'yahoo', start, end)
+    except RemoteDataError as e:
+        stock = web.DataReader(stock_id, 'yahoo', start, end)
+    except (TypeError, ValueError) as e:
+        raise e
+    stock = pandas.DataFrame(data_stock.Close)
+    stock["profit"] = stock.Close.apply(profit_collum, args=(stock.Close[0], 1200,))
+    stock["revenue"] = stock.Close.apply(revenue_collum, args=(1200,))
+    # Конкатенация года и месяца
+    # stock.groupby(pd.TimeGrouper(freq='M')).mean()
+    return stock.resample('M').mean()
+
+
+def all_stocks(parse):
+    StockMonth = namedtuple('StockMonth',
+                            'stock_id, stock')
+    all_stocks = [
+        StockMonth(
+            stock_id=item.stock_id,
+            stock=get_stock2(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse
+    ]
+    return all_stocks

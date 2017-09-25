@@ -81,7 +81,7 @@ def total_earnings_profit(*args):
 def total_earnings_revenue(*args):
     return sum(list(args))
 
-# data = 'AAPL=2016-12-24=1200\r\nGOOG=2001-01-01=50\r\nAMZN=2012-01-01=150'
+# data = 'AAPL=2016-12-24=1200\r\nGOOG=20012-01-01=500\r\nAMZN=2012-01-01=800'
 # d1= data.split('\r\n')
 # parse = [item.split("=") for item in d1]
 # data2 = [{"id": item[0], "data_start": item[1], "rev": item[2]} for item in parse]
@@ -278,3 +278,33 @@ def create_diagramm_test(total_profit, total_revenue, period):
 #         self.true = data_correct
 
 # step 1
+
+[all_close[stock.stock_id].head(10) for stock in parse]
+all_close = pandas.DataFrame({item.stock_id: item.stock.Close for item in s1})
+total_profit2['total'] = total_profit2.sum(axis=1)
+total_profit2['period'] = ['{}-{}'.format(str(item.year), str(item.month)) for item in total_profit.index]
+group2 = total_profit2.groupby(['period'])
+
+# new_revenue = prof.apply(revenue_collum, args=(1200,))
+# Get data about projects
+# so we do cumsum over period of time so we can see the growth
+# gp = df.groupby(['period', 'project']).agg({'minutes':'sum'})
+# gp = gp.unstack(level=1)
+# gp.groupby(pd.TimeGrouper(freq='M')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
+# # over quarters
+# gp.groupby(pd.TimeGrouper(freq='Q')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
+# # over weeks
+# gp.groupby(pd.TimeGrouper(freq='W')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
+
+goog.groupby(pd.TimeGrouper(freq='M')).mean()
+# Альтернатива replase
+
+# s1 list about stocks
+s1 = all_stocks(parse)
+all_close = pandas.DataFrame({item.stock_id: item.stock.Close for item in s1})
+all_close['period'] = ['{}-{}'.format(str(item.year),
+                      str(item.month)) for item in all_close.index]
+total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}).fillna(0)
+total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}).fillna(0).sum(axis=1)
+all_close['total revenue'] = pandas.DataFrame({item.stock_id: item.stock.revenue for item in s1}).fillna(0).sum(axis=1)
+all_close['total profit'] = pandas.DataFrame({item.stock_id: item.stock.profit for item in s1}).fillna(0).sum(axis=1)
