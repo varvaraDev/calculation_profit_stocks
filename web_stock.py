@@ -1,14 +1,11 @@
 """Starting module for web application."""
 
 from flask import Flask, render_template, request
-from highcharts import Highchart
+# from highcharts import Highchart
 
 from stocks_portfolio import (
     parse_str,
-    row_stocks,
-    calculate_profit_revenue,
-    get_data_all,
-    calculate_total
+    all_stocks_ver1
     )
 
 app = Flask(__name__)
@@ -48,59 +45,82 @@ def stocks():
         return response
 
     if request.method == 'POST':
+        parse_form = parse_str(request.form["textcontent"])
+        result = all_stocks_ver1(parse_form)
+        id_stocks = [item.stock_id for item in parse_form]
+        stock_close = [result[id_stock] for id_stock in id_stocks]
 
-        form = request.form["textcontent"]
-        parse_form = parse_str(form)
-        row = row_stocks(parse_form)
-        handle_stock = calculate_profit_revenue(row)
-        result = get_data_all(handle_stock)
-        period = ['{}-{}'.format(str(item.year),
-                  str(item.month)) for item in result[0].revenue.index]
-        total_profit = calculate_total(result, True)
-        total_revenue = calculate_total(result, False)
-        create_diagramm(
-            portfolio=result,
-            total_profit=total_profit,
-            total_revenue=total_revenue,
-            period=period
-            )
-
-        return render_template(
-            'stock_hero.html'
+    return render_template(
+            'stock.html',
+            profit=result.total_profit.tolist(),
+            revenue=result.total_revenue.tolist(),
+            stock_close=stock_close,
+            period=result.period
             )
 
 
-def create_diagramm(portfolio, total_profit, total_revenue, period):
-    """Function created diagramm from the calculated values.
-    Args:
-        portfolio (list) - all handle stocks
-        total_profit (list)- aggregated profit by all stocks
-        total_revenue (list)- aggregated revenue by all stocks
-        period - Time season from the date of the first purchase of shares
-    Return:
-        html file with crated diagramm
-    """
-    H = Highchart()
-    H.set_options('title', {'text': "Calculate profil of stocks"})
-    for item in portfolio:
-        H.add_data_set(item.profit.tolist(), 'line', 'Profit {}'.format(
-            item.stock_id)
+@app.route('/display', methods=['GET', 'POST'])
+def display():
+    if request.method == 'GET':
+            total_revenue = [1505.46, 1501.24, 1511.61, 1507.71, 1500.74, 1483.47, 1496.1, 1529.12, 1556.83, 1560.68]
+            total_profit = [-102.25, -117.09, -73.87, -90.03, -119.39, -199.55, -141.19, -6.17, 87.04, 97.41]
+            period = ['2012-1',
+                         '2012-2',
+                         '2012-3',
+                         '2012-4',
+                         '2012-5',
+                         '2012-6',
+                         '2012-7',
+                         '2012-8',
+                         '2012-9',
+                         '2012-10']
+            nan = None
+            # close_stock = [[200, 100, 120, 111, 133, 555, 666, 444, 333, 555],
+            #  [305.4577928,
+            #   301.23897845,
+            #   311.60941518181824,
+            #   307.7141159000001,
+            #   300.73807877272725,
+            #   283.46869195238094,
+            #   296.09916033333343,
+            #   329.1165892173913,
+            #   356.8302132105262,
+            #   360.682203047619],
+            #  [444, 111, 333, 444, 555, 333, 1223, 103, 434, 100]]
+            close_stock = [[nan, nan, nan, nan, nan, nan, 103, 434, 100, 100],
+             [305.4577928,
+              301.23897845,
+              311.60941518181824,
+              307.7141159000001,
+              300.73807877272725,
+              283.46869195238094,
+              296.09916033333343,
+              329.1165892173913,
+              356.8302132105262,
+              360.682203047619],
+             [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434, 100]]
+            # close_stock = [('AAPL', [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]),
+            #                  ('GOOG',
+            #                   [305.4577928,
+            #                    301.23897845,
+            #                    311.60941518181824,
+            #                    307.7141159000001,
+            #                    300.73807877272725,
+            #                    283.46869195238094,
+            #                    296.09916033333343,
+            #                    329.1165892173913,
+            #                    356.8302132105262,
+            #                    360.682203047619]),
+            #                  ('AMZN', [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan])]
+    stocks_id = ['AAPL', 'GOOG', 'AMZN']
+    return render_template(
+            'stock.html',
+            profit=total_profit,
+            revenue=total_revenue,
+            stock_close=close_stock,
+            period=period,
+            stocks_id=stocks_id
             )
-        H.add_data_set(item.revenue.tolist(), 'line', 'Revenue {}'.format(
-            item.stock_id)
-            )
-    H.add_data_set(total_profit, 'line', 'TOTAL PROFIT')
-    H.add_data_set(total_revenue, 'line', 'TOTAL REVENUE')
-    H.set_options('yAxis', {'title': {'text': 'USD'},
-                  'plotLines': {'value': -250, 'width': 1, 'color': '#808080'},
-                            'tickInterval': 250, 'gridLineWidth': 2,
-                            'min': -500})
-    H.set_options('xAxis', {'categories': period, 'type': 'datetime'})
-    H.set_options('legend', {'layout': 'horizontal',
-                             'align': 'center',
-                             'verticalAlign': 'bottom',
-                             'borderWidth': 0})
-    H.save_file("templates/stock_hero")
 
 
 if __name__ == "__main__":
