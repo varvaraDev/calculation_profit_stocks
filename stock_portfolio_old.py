@@ -197,3 +197,21 @@ def all_stocks_ver1(parse_data):
 # id_stocks = [item.stock_id for item in parse]
 stocks = pandas.DataFrame({idx: item.stock.Close
                           for item in enumerate(all_stocks)})
+
+def all_stocks_ver2(parse_data):
+    # parse_data = parse_str(form)
+    all_stocks = [
+        get_stock2(item.stock_id, item.data_start, item.revenue)
+        for item in parse_data
+    ]
+    stocks = pandas.DataFrame({idx: item.Close
+                              for idx, item in enumerate(all_stocks)})
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    stocks['total_revenue'] = pandas.DataFrame(
+        {idx: item.revenue for idx, item in enumerate(all_stocks)}
+    ).fillna(0).sum(axis=1)
+    stocks['total_profit'] = pandas.DataFrame(
+        {idx: item.profit for idx, item in enumerate(all_stocks)}
+    ).fillna(0).sum(axis=1)
+    return stocks.round(2)

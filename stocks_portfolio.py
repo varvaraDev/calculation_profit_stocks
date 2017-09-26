@@ -27,6 +27,10 @@ def parse_str(data):
 
 
 def get_stock2(stock_id, start_date, revenue):
+    """Function for obtaining data on each share
+    Args:
+        stock_id (string) - 
+    """
     end = datetime.date.today()
     try:
         start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
@@ -44,34 +48,36 @@ def get_stock2(stock_id, start_date, revenue):
         revenue_collums,
         args=(revenue,)
     )
-    # stock.groupby(pd.TimeGrouper(freq='M')).mean()
-    # stock.resample('M').mean()
+
     return stock.groupby(pandas.TimeGrouper(freq='M')).mean()
 
 
 def all_stocks_ver1(parse_data):
     StockMonth = namedtuple('StockMonth',
                             'stock_id, stock')
-    # parse_data = parse_str(form)
     all_stocks = [
         StockMonth(
             stock_id=item.stock_id,
             stock=get_stock2(item.stock_id, item.data_start, item.revenue)
         ) for item in parse_data
     ]
+    print('row stocks\n', all_stocks)
     stocks = pandas.DataFrame({item.stock_id: item.stock.Close
                               for item in all_stocks})
+
     stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
                         for item in stocks.index]
-    stocks['total_revenue'] = pandas.DataFrame(
-        {item.stock_id: item.stock.revenue for item in all_stocks}
-    ).fillna(0).sum(axis=1)
-    stocks['total_profit'] = pandas.DataFrame(
+    print('all close price with period\n', stocks)
+    # get all revenue from stocks and sum this
+    all_revenue = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks})
+    stocks['total_revenue'] = all_revenue.fillna(0).sum(axis=1)
+    # get all profit from stocks and sum this
+    all_profit = pandas.DataFrame(
         {item.stock_id: item.stock.profit for item in all_stocks}
-    ).fillna(0).sum(axis=1)
+    )
+    stocks['total_profit'] = all_profit.fillna(0).sum(axis=1)
+
+    print('all revenue\n', all_revenue)
+    print('all profit\n', all_profit)
     return stocks.round(2)
-
-
-# id_stocks = [item.stock_id for item in parse]
-# stocks = pandas.DataFrame({idx: item.stock.Close
-#                           for item in enumerate(all_stocks)})

@@ -309,3 +309,57 @@ total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}
 all_close['total revenue'] = pandas.DataFrame({item.stock_id: item.stock.revenue for item in s1}).fillna(0).sum(axis=1)
 all_close['total profit'] = pandas.DataFrame({item.stock_id: item.stock.profit for item in s1}).fillna(0).sum(axis=1)
 stock2 = [(id_stock, all_close[id_stock].head(10).tolist()) for id_stock in id_stocks]
+
+
+def all_stocks_ver1(parse_data):
+    StockMonth = namedtuple('StockMonth',
+                            'stock_id, stock')
+    # parse_data = parse_str(form)
+    all_stocks = [
+        StockMonth(
+            stock_id=item.stock_id,
+            stock=get_stock2(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse_data
+    ]
+    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+                              for item in all_stocks})
+
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    stocks['total_revenue'] = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks}
+    ).fillna(0).sum(axis=1)
+    stocks['total_profit'] = pandas.DataFrame(
+        {item.stock_id: item.stock.profit for item in all_stocks}
+    ).fillna(0).sum(axis=1)
+    return stocks.round(2)
+
+
+def all_stocks_debagger(parse_data):
+    StockMonth = namedtuple('StockMonth',
+                            'stock_id, stock')
+    all_stocks = [
+        StockMonth(
+            stock_id=item.stock_id,
+            stock=get_stock2(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse_data
+    ]
+    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+                              for item in all_stocks})
+
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    # get all revenue from stocks and sum this
+    all_revenue = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks})
+    stocks['total_revenue'] = all_revenue.fillna(0).sum(axis=1)
+    # get all profit from stocks and sum this
+    all_profit = pandas.DataFrame(
+        {item.stock_id: item.stock.profit for item in all_stocks}
+    )
+    stocks['total_profit'] = all_profit.fillna(0).sum(axis=1)
+
+    print('all_close_price\n', stocks)
+    print('all_revenue\n', all_revenue)
+    print('all_profut\n', all_profit)
+    return stocks.round(2)

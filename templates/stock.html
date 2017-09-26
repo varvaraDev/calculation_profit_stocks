@@ -10,75 +10,86 @@
       <!-- <div id = "container" style = "width: 550px; height: 400px; margin: 0 auto"></div> -->
       <div id="container" style="">Loading....</div>
       <script type=text/javascript>
-             var title = {
-                text: 'Calculate profil of stocks'
-             };
-             var subtitle = {
-                text: 'Name stocks - show closing price of each stock item'
-             };
-            //  var stocks = {{ stock_close|tojson }}
-            //  var id_stock = {{stocks_id|tojson }}
-             var xAxis = {
-                categories: {{ period|tojson }}
-             };
-             var yAxis = {
+
+              var title = {
+                        text: 'Calculate profil of stocks'
+                };
+
+              var subtitle = {
+                      text: 'Name stocks - show closing price of each stock item'
+                };
+
+              var xAxis = {
+                  categories: {{ period|tojson }}
+                };
+
+              var yAxis = {
                 title: {
                    text: 'USD'
                 },
                 softMin: -500,
-                tickInterval: 100
-             };
-             var tooltip = {
+                tickInterval: 50
+                };
+
+              var tooltip = {
                 valuePrefix: '$ ',
                 valueSuffix: ' USD'
-             }
-             var legend = {
+                }
+
+              var legend = {
                 layout: 'horizontal',
                 align: 'center',
                 verticalAlign: 'bottom',
                 borderWidth: 0
-             };
-             var plotOptions = {
+                };
+
+              var plotOptions = {
                line: {
                    dataLabels: {
                        enabled: true
+                      }
                    }
-               }
-           }
-            var array = {{ stock_close|tojson }}
-            var ids = {{stocks_id|tojson }}
-            var series = [],
-               len = array.length,
-               i = 0;
+                }
 
-            for(i;i<len;i++){
-               series.push({
-                   name: ids[i],
-                   data: array[i],
-                   dashStyle: 'longdash'
-               });
-            }
-             series.push({
-                name: 'Total profit',
-                data: {{ profit|tojson }}
-              });
+              var array = {{ stock_close|tojson }}
+              var series = [],
+                 len = array.length,
+                 i = 0;
+
+              array.forEach(function(item, array) {
+                    series.push( {
+                        name: item[0],
+                        data: item[1],
+                        dashStyle: 'longdash'
+                    } );
+                 });
+
+              series.push({
+                  name: 'Total profit',
+                  data: {{ profit|tojson }},
+                });
+
               series.push({
                  name: 'Total revenue',
                  data: {{ revenue|tojson }},
 
                });
-             var json = {};
-             json.title = title;
-             json.subtitle = subtitle;
-             json.xAxis = xAxis;
-             json.yAxis = yAxis;
-             json.tooltip = tooltip;
-             json.legend = legend;
-             json.series = series;
-             json.plotOptions = plotOptions;
+
+              var json = {};
+              json.title = title;
+              json.subtitle = subtitle;
+              json.xAxis = xAxis;
+              json.yAxis = yAxis;
+              json.tooltip = tooltip;
+              json.legend = legend;
+              json.series = series;
+              json.plotOptions = plotOptions;
 
              $('#container').highcharts(json);
+
        </script>
+    <p><b>Input you portfolio:</b></p>
+    <p><b>{{portfolio}}</b></p>
    </body>
 
 </html>

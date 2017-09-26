@@ -13,7 +13,6 @@ def profit_collum(new_cost, old_cost, revenue):
         profit - profit in USD terms
 
     """
-    new_cost = new_cost
     profit_percent = (new_cost - old_cost) / new_cost
     profit = revenue * profit_percent
     return profit
@@ -29,8 +28,6 @@ def revenue_collums(profit, revenue):
     Return - update revenue with considering get profit
 
     """
-    profit = profit
     if profit == 0:
         return revenue
-    revenue_new = profit + revenue
-    return revenue_new
+    return profit + revenue

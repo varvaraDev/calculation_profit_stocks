@@ -26,7 +26,9 @@ def stocks():
         parse_form = parse_str(request.form["textcontent"])
         id_stocks = [item.stock_id for item in parse_form]
         result = all_stocks_ver1(parse_form)
-        stock_close = [result[id_stock].tolist() for id_stock in id_stocks]
+        print('DataFrame with all data\n', result)
+        stock_close = [(id_stock, result[id_stock].tolist())
+                       for id_stock in id_stocks]
 
     return render_template(
             'stock.html',
@@ -34,7 +36,7 @@ def stocks():
             revenue=result.total_revenue.tolist(),
             stock_close=stock_close,
             period=result.period.tolist(),
-            stocks_id=id_stocks
+            portfolio=request.form["textcontent"]
             )
 
 
@@ -66,31 +68,31 @@ def display():
             #   356.8302132105262,
             #   360.682203047619],
             #  [444, 111, 333, 444, 555, 333, 1223, 103, 434, 100]]
-            close_stock = [[nan, nan, nan, nan, nan, nan, 103, 434, 100, 100],
-             [305.45,
-              301.23,
-              311.60,
-              307.71,
-              300.73,
-              283.46,
-              296.09,
-              329.11,
-              356.83,
-              360.68],
-             [nan, nan, nan, nan, nan, 555, 333, 122, 103, 434]]
-            # close_stock = [('AAPL', [nan, nan, nan, nan, nan, nan, 103, 434, 100, 100]),
-            #                  ('GOOG',
-            #                   [305.4577928,
-            #                    301.23897845,
-            #                    311.60941518181824,
-            #                    307.7141159000001,
-            #                    300.73807877272725,
-            #                    283.46869195238094,
-            #                    296.09916033333343,
-            #                    329.1165892173913,
-            #                    356.8302132105262,
-            #                    360.682203047619]),
-            #                  ('AMZN', [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434, 100])]
+            # close_stock = [[nan, nan, nan, nan, nan, nan, 103, 434, 100, 100],
+            #  [305.45,
+            #   301.23,
+            #   311.60,
+            #   307.71,
+            #   300.73,
+            #   283.46,
+            #   296.09,
+            #   329.11,
+            #   356.83,
+            #   360.68],
+            #  [nan, nan, nan, nan, nan, 555, 333, 122, 103, 434]]
+            close_stock = [('AAPL', [nan, nan, nan, nan, nan, nan, 103, 434, 100, 100]),
+                             ('GOOG',
+                              [305.4577928,
+                               301.23897845,
+                               311.60941518181824,
+                               307.7141159000001,
+                               300.73807877272725,
+                               283.46869195238094,
+                               296.09916033333343,
+                               329.1165892173913,
+                               356.8302132105262,
+                               360.682203047619]),
+                             ('AMZN', [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434])]
             # close_stock = [['AAPL', [nan, nan, nan, nan, nan, nan, 103, 434, 100, 100]],
             #                  ['GOOG',
             #                   [305.4577928,
@@ -105,13 +107,15 @@ def display():
             #                    360.682203047619]],
             #                  ['AMZN', [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434, 100]]]
     stocks_id = ['AAPL', 'GOOG', 'AMZN']
+    portfolio = 'AAPL=2016-12-24=1200\r\nGOOG=2012-01-01=500\r\nAMZN=2012-01-01=800'.split('\r\n')
     return render_template(
             'stock.html',
             profit=total_profit,
             revenue=total_revenue,
             stock_close=close_stock,
             period=period,
-            stocks_id=stocks_id
+            stocks_id=stocks_id,
+            portfolio=portfolio
             )
 
 
