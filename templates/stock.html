@@ -11,10 +11,10 @@
       <div id="container" style="">Loading....</div>
       <script type=text/javascript>
              var title = {
-                text: 'Calculate portfolio C:'
+                text: 'Calculate profil of stocks'
              };
              var subtitle = {
-                text: 'Greating'
+                text: 'Name stocks - show closing price of each stock item'
              };
             //  var stocks = {{ stock_close|tojson }}
             //  var id_stock = {{stocks_id|tojson }}
@@ -24,36 +24,27 @@
              var yAxis = {
                 title: {
                    text: 'USD'
-                }
+                },
+                softMin: -500,
+                tickInterval: 100
              };
              var tooltip = {
-                valueSuffix: '\xB0C'
+                valuePrefix: '$ ',
+                valueSuffix: ' USD'
              }
              var legend = {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom',
                 borderWidth: 0
              };
-            //  var plotOptions: {
-            //    series: {
-            //      pointStart: 2010
-            //    };
-            //  var series =  [{
-            //        name: 'profit',
-            //        data: {{ profit|tojson }}
-            //     },
-            //     {% for st in stocks %}
-            //     {
-            //        name: {ids},
-            //        data: {st}
-            //     },
-            //     {% endfor %}
-            //     {
-            //        name: 'revenue',
-            //        data: {{ revenue|tojson }}
-            //     },
-            //  ];
+             var plotOptions = {
+               line: {
+                   dataLabels: {
+                       enabled: true
+                   }
+               }
+           }
             var array = {{ stock_close|tojson }}
             var ids = {{stocks_id|tojson }}
             var series = [],
@@ -63,16 +54,18 @@
             for(i;i<len;i++){
                series.push({
                    name: ids[i],
-                   data: array[i]
+                   data: array[i],
+                   dashStyle: 'longdash'
                });
             }
              series.push({
-                name: 'Total_profit',
+                name: 'Total profit',
                 data: {{ profit|tojson }}
               });
               series.push({
-                 name: 'total_revenue',
-                 data: {{ revenue|tojson }}
+                 name: 'Total revenue',
+                 data: {{ revenue|tojson }},
+
                });
              var json = {};
              json.title = title;
@@ -82,8 +75,7 @@
              json.tooltip = tooltip;
              json.legend = legend;
              json.series = series;
-            //  json.series = series2;
-            //  json.plotOptions=plotOptions
+             json.plotOptions = plotOptions;
 
              $('#container').highcharts(json);
        </script>

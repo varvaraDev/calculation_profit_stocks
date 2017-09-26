@@ -143,3 +143,57 @@ def all_stocks(parse):
         ) for item in parse
     ]
     return all_stocks
+
+
+"***********************************************"
+"***********************************************"
+
+def get_stock2(stock_id, start_date, revenue):
+    end = datetime.date.today()
+    try:
+        start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        data_stock = web.DataReader(stock_id, 'yahoo', start, end)
+    except RemoteDataError as e:
+        data_stock = web.DataReader(stock_id, 'yahoo', start, end)
+    except (TypeError, ValueError) as e:
+        raise e
+    stock = pandas.DataFrame(data_stock.Close)
+    stock["profit"] = stock.Close.apply(
+        profit_collum,
+        args=(stock.Close[0], revenue,)
+    )
+    stock["revenue"] = stock.profit.apply(
+        revenue_collums,
+        args=(revenue,)
+    )
+    # stock.groupby(pd.TimeGrouper(freq='M')).mean()
+    # stock.resample('M').mean()
+    return stock.groupby(pandas.TimeGrouper(freq='M')).mean()
+
+
+def all_stocks_ver1(parse_data):
+    StockMonth = namedtuple('StockMonth',
+                            'stock_id, stock')
+    # parse_data = parse_str(form)
+    all_stocks = [
+        StockMonth(
+            stock_id=item.stock_id,
+            stock=get_stock2(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse_data
+    ]
+    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+                              for item in all_stocks})
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    stocks['total_revenue'] = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks}
+    ).fillna(0).sum(axis=1)
+    stocks['total_profit'] = pandas.DataFrame(
+        {item.stock_id: item.stock.profit for item in all_stocks}
+    ).fillna(0).sum(axis=1)
+    return stocks.round(2)
+
+
+# id_stocks = [item.stock_id for item in parse]
+stocks = pandas.DataFrame({idx: item.stock.Close
+                          for item in enumerate(all_stocks)})

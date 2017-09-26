@@ -1,7 +1,6 @@
 """Starting module for web application."""
 
 from flask import Flask, render_template, request
-# from highcharts import Highchart
 
 from stocks_portfolio import (
     parse_str,
@@ -15,47 +14,27 @@ app = Flask(__name__)
 def stocks():
     """Maim function for calculate profil of stocks.
     Args:
-        response (html) response for get request,
-        by get data of stocks with form.
-        form (string) Data of forms textarea
-        row (string) resul parse of data
-        handle_stock (list) List of frame objects by stocks
-        result (list) treated data on shares
-        total_profit, total_revenue (obj) - result profit and revenue of
-        all_data
+        parse_form (string) parse data from form
+        id_stocks (string) id by stocks
+        result (DateFrame) table with handle stocks
+        stock_close (list) closing price of each stock item
     """
     if request.method == 'GET':
-        response = """
-            <html>
-            <head>
-            <meta charset="utf-8">
-            <title>Handling stocks</title>
-            </head>
-            <body>
-            <form action='/stocks' method="post">
-                <p><b>Input you portfolio:</b></p>
-                <p>
-                <textarea name="textcontent" rows="10" cols="45"></textarea>
-                </p>
-                <p><input type="submit" value="Send"></p>
-            </form>
-                </body>
-            </html>
-        """
-        return response
+        return render_template('form.html')
 
     if request.method == 'POST':
         parse_form = parse_str(request.form["textcontent"])
-        result = all_stocks_ver1(parse_form)
         id_stocks = [item.stock_id for item in parse_form]
-        stock_close = [result[id_stock] for id_stock in id_stocks]
+        result = all_stocks_ver1(parse_form)
+        stock_close = [result[id_stock].tolist() for id_stock in id_stocks]
 
     return render_template(
             'stock.html',
             profit=result.total_profit.tolist(),
             revenue=result.total_revenue.tolist(),
             stock_close=stock_close,
-            period=result.period
+            period=result.period.tolist(),
+            stocks_id=id_stocks
             )
 
 
@@ -88,18 +67,18 @@ def display():
             #   360.682203047619],
             #  [444, 111, 333, 444, 555, 333, 1223, 103, 434, 100]]
             close_stock = [[nan, nan, nan, nan, nan, nan, 103, 434, 100, 100],
-             [305.4577928,
-              301.23897845,
-              311.60941518181824,
-              307.7141159000001,
-              300.73807877272725,
-              283.46869195238094,
-              296.09916033333343,
-              329.1165892173913,
-              356.8302132105262,
-              360.682203047619],
-             [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434, 100]]
-            # close_stock = [('AAPL', [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]),
+             [305.45,
+              301.23,
+              311.60,
+              307.71,
+              300.73,
+              283.46,
+              296.09,
+              329.11,
+              356.83,
+              360.68],
+             [nan, nan, nan, nan, nan, 555, 333, 122, 103, 434]]
+            # close_stock = [('AAPL', [nan, nan, nan, nan, nan, nan, 103, 434, 100, 100]),
             #                  ('GOOG',
             #                   [305.4577928,
             #                    301.23897845,
@@ -111,7 +90,20 @@ def display():
             #                    329.1165892173913,
             #                    356.8302132105262,
             #                    360.682203047619]),
-            #                  ('AMZN', [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan])]
+            #                  ('AMZN', [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434, 100])]
+            # close_stock = [['AAPL', [nan, nan, nan, nan, nan, nan, 103, 434, 100, 100]],
+            #                  ['GOOG',
+            #                   [305.4577928,
+            #                    301.23897845,
+            #                    311.60941518181824,
+            #                    307.7141159000001,
+            #                    300.73807877272725,
+            #                    283.46869195238094,
+            #                    296.09916033333343,
+            #                    329.1165892173913,
+            #                    356.8302132105262,
+            #                    360.682203047619]],
+            #                  ['AMZN', [nan, nan, nan, nan, nan, 555, 333, 1223, 103, 434, 100]]]
     stocks_id = ['AAPL', 'GOOG', 'AMZN']
     return render_template(
             'stock.html',

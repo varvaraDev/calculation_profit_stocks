@@ -5,7 +5,7 @@ from collections import namedtuple
 import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
 import pandas
-from calculate import profit_collum, revenue_collum
+from calculate import profit_collum, revenue_collums
 
 
 def parse_str(data):
@@ -32,28 +32,27 @@ def get_stock2(stock_id, start_date, revenue):
         start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
         data_stock = web.DataReader(stock_id, 'yahoo', start, end)
     except RemoteDataError as e:
-        stock = web.DataReader(stock_id, 'yahoo', start, end)
+        data_stock = web.DataReader(stock_id, 'yahoo', start, end)
     except (TypeError, ValueError) as e:
         raise e
-    stock = pandas.DataFrame(data_stock.Close)
+    stock = data_stock.Close.to_frame()
     stock["profit"] = stock.Close.apply(
         profit_collum,
-        args=(stock.Close[0], 1200,)
+        args=(stock.Close[0], revenue,)
     )
-    stock["revenue"] = stock.Close.apply(
-        revenue_collum,
-        args=(1200,)
+    stock["revenue"] = stock.profit.apply(
+        revenue_collums,
+        args=(revenue,)
     )
-    # Конкатенация года и месяца
     # stock.groupby(pd.TimeGrouper(freq='M')).mean()
     # stock.resample('M').mean()
     return stock.groupby(pandas.TimeGrouper(freq='M')).mean()
 
 
-def all_stocks_ver1(form):
+def all_stocks_ver1(parse_data):
     StockMonth = namedtuple('StockMonth',
                             'stock_id, stock')
-    parse_data = parse_str(form)
+    # parse_data = parse_str(form)
     all_stocks = [
         StockMonth(
             stock_id=item.stock_id,
@@ -70,7 +69,9 @@ def all_stocks_ver1(form):
     stocks['total_profit'] = pandas.DataFrame(
         {item.stock_id: item.stock.profit for item in all_stocks}
     ).fillna(0).sum(axis=1)
-    return stocks
+    return stocks.round(2)
 
 
 # id_stocks = [item.stock_id for item in parse]
+# stocks = pandas.DataFrame({idx: item.stock.Close
+#                           for item in enumerate(all_stocks)})

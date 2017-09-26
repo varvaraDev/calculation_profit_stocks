@@ -308,3 +308,4 @@ total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}
 total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}).fillna(0).sum(axis=1)
 all_close['total revenue'] = pandas.DataFrame({item.stock_id: item.stock.revenue for item in s1}).fillna(0).sum(axis=1)
 all_close['total profit'] = pandas.DataFrame({item.stock_id: item.stock.profit for item in s1}).fillna(0).sum(axis=1)
+stock2 = [(id_stock, all_close[id_stock].head(10).tolist()) for id_stock in id_stocks]
