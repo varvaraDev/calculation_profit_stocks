@@ -278,3 +278,6 @@ def create_diagramm_test(total_profit, total_revenue, period):
 #         self.true = data_correct
 
 # step 1
+
+qamz = qamz.copy()
+qamz['profit'] = qamz.loc[:,'Close'].apply(profit_collum, args=(round(float(qamz.Close[0]), 2), 500,))

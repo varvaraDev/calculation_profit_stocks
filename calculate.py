@@ -34,3 +34,20 @@ def revenue_collum(profit, revenue):
         return revenue
     revenue_new = profit + revenue
     return round(revenue_new, 2)
+
+
+def profit_collum2(new_cost, old_cost, revenue):
+    """Calculate profits for stock in procent.
+
+    Args:
+        new_cost - the value in the column 'Close' by table stock
+        profit_percent - profit in percentage terms
+        revenue - dollars invested in share
+
+    Return
+        profit - profit in USD terms
+
+    """
+    new_cost = float(new_cost)
+    profit_percent = (new_cost - old_cost) / new_cost
+    return round(profit_percent, 2)

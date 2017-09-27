@@ -31,6 +31,7 @@ def parse_str(data):
 
 # step 2
 
+
 def row_stocks(parse_item):
     """First parse of stocks. Returns an object DataFrame for each stock """
     StockAllData = namedtuple('StockAllData',
@@ -95,6 +96,7 @@ def get_data_all(handle_stocks):
         merge_stock.append(stock)
     return merge_stock
 
+
 def calculate_total(all_data, sort_profit):
     if sort_profit:
         total = sum([item.profit for item in all_data])
@@ -103,7 +105,9 @@ def calculate_total(all_data, sort_profit):
     total_round = [round(item, 2) for item in total]
     return total_round
 
+
 def get_stock(stock_id, start_date):
+    """"""
     end = datetime.date.today()
     try:
         start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
