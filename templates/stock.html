@@ -88,6 +88,11 @@
              $('#container').highcharts(json);
 
        </script>
-   </body>
+       <p><b>Input you portfolio:</b></p>
+       {% for item in data_form %}
+       <p><b>{{item}}</b></p>
+       {% endfor %}
+
+  </body>
 
 </html>

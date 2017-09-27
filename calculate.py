@@ -28,6 +28,14 @@ def revenue_collums(profit, revenue):
     Return - update revenue with considering get profit
 
     """
-    if profit == 0:
-        return revenue
     return profit + revenue
+
+    # stock["profit"] = stock.Close.apply(
+    #     profit_collum,
+    #     args=(stock.Close[0], revenue,)
+    # )
+
+    # stock["profit"] = stock.Close.apply(
+    #     profit_collum,
+    #     args=(stock.Close[0], revenue,)
+    # )

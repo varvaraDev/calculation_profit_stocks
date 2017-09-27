@@ -27,8 +27,12 @@ def stocks():
         id_stocks = [item.stock_id for item in parse_form]
         result = all_stocks_ver1(parse_form)
         print('DataFrame with all data\n', result)
-        stock_close = [(id_stock, result[id_stock].tolist())
-                       for id_stock in id_stocks]
+        stock_close = [
+            (
+                        id_stock,
+                        result[id_stock].tolist()
+            )
+            for id_stock in id_stocks]
         print(stock_close)
 
     return render_template(
@@ -36,7 +40,8 @@ def stocks():
             profit=result.total_profit.tolist(),
             revenue=result.total_revenue.tolist(),
             stock_close=stock_close,
-            period=result.period.tolist()
+            period=result.period.tolist(),
+            data_form=request.form["textcontent"].split('\r\n')
             )
 
 
@@ -114,7 +119,8 @@ def display():
             revenue=total_revenue,
             stock_close=close_stock,
             period=period,
-            stocks_id=stocks_id
+            stocks_id=stocks_id,
+            data_form=portfolio
             )
 
 

@@ -5,7 +5,7 @@ from collections import namedtuple
 import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
 import pandas
-from calculate import profit_collum, revenue_collums
+# from calculate import profit_collum, revenue_collums
 
 
 def parse_str(data):
@@ -31,25 +31,22 @@ def get_stock2(stock_id, start_date, revenue):
     Args:
         stock_id (string) -
     """
-    end = datetime.date.today()
+    # end = datetime.date.today()
     try:
-        start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-        data_stock = web.DataReader(stock_id, 'yahoo', start, end)
+        start = datetime.datetime.strptime(
+            start_date, '%Y-%m-%d'
+        ) + datetime.timedelta(days=1)
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
     except RemoteDataError as e:
-        data_stock = web.DataReader(stock_id, 'yahoo', start, end)
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
     except (TypeError, ValueError) as e:
         raise e
     stock = data_stock.Close.to_frame()
-    stock["profit"] = stock.Close.apply(
-        profit_collum,
-        args=(stock.Close[0], revenue,)
-    )
-    stock["revenue"] = stock.profit.apply(
-        revenue_collums,
-        args=(revenue,)
-    )
-
-    return stock.groupby(pandas.TimeGrouper(freq='M')).mean()
+    stock["profit"] = revenue * ((stock.Close - stock.Close[0]) / stock.Close)
+    stock["revenue"] = stock.profit + revenue
+    print(stock_id, stock)
+    return stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
+    # return stock.resample('BM').mean()
 
 
 def all_stocks_ver1(parse_data):
