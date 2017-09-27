@@ -27,8 +27,9 @@
                 title: {
                    text: 'USD'
                 },
-                softMin: -500,
-                tickInterval: 50
+                min: -200,
+                softMin: -201,
+                tickInterval: 100
                 };
 
               var tooltip = {
@@ -53,8 +54,7 @@
 
               var array = {{ stock_close|tojson }}
               var series = [],
-                 len = array.length,
-                 i = 0;
+                 len = array.length
 
               array.forEach(function(item, array) {
                     series.push( {

@@ -29,8 +29,8 @@ def stocks():
         print('DataFrame with all data\n', result)
         stock_close = [
             (
-                        id_stock,
-                        result[id_stock].tolist()
+                id_stock,
+                result[id_stock].tolist()
             )
             for id_stock in id_stocks]
         print(stock_close)
