@@ -5,18 +5,15 @@ from collections import namedtuple
 import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
 import pandas
-from calculate import profit_collum, revenue_collum
+from handle_exceptions import RequestError
 
 
-def parse_str(data):
+def parse_form(data):
     """Parsing input values from form.
-
     Args:
-        data (string) data from user
-
+        data (string) data from forb by get requsest
     Return:
-        objects StockData for further work
-
+        objects StockData for get data about stock
     """
     parse_data = data.split('\r\n')
     parse = [item.split("=") for item in parse_data]
@@ -24,96 +21,76 @@ def parse_str(data):
     try:
         parse_item = [StockData(item[0], item[1], float(item[2]))
                       for item in parse]
-        return parse_item
-    except (TypeError, ValueError, IndexError) as e:
-        raise e
-# step 2
-
-# step 2
+    except (TypeError, ValueError, IndexError, AttributeError) as e:
+        raise RequestError(e)
+    return parse_item
 
 
-def row_stocks(parse_item):
-    """First parse of stocks. Returns an object DataFrame for each stock """
-    StockAllData = namedtuple('StockAllData',
-                              'stock_id, revenue, stock, first_cost')
-    all_list = []
-    for item in parse_item:
-        stock = get_stock(
-            item.stock_id,
-            item.data_start
-         )
-        frame = StockAllData(
-            stock_id=item.stock_id,
-            revenue=float(item.revenue),
-            stock=stock,
-            first_cost=round(float(stock[0]), 2)
-            )
-        all_list.append(frame)
-    return all_list
-
-
-def calculate_profit_revenue(row_stocks):
-    """First parse of stocks. Returns an object DataFrame for each stock """
-    StockCallculate = namedtuple('StockCallculate',
-                                 'stock_id, revenue, profit')
-    handle_stocks = []
-    for item in row_stocks:
-        stock = item.stock.resample('M').mean()
-        profit = stock.apply(
-            profit_collum,
-            args=(item.first_cost, item.revenue, )
-         )
-        diff_revenue = profit.apply(
-            revenue_collum,
-            args=(item.revenue,)
-         )
-        frame = StockCallculate(
-            stock_id=item.stock_id,
-            profit=profit,
-            revenue=diff_revenue
-            )
-        handle_stocks.append(frame)
-    return handle_stocks
-
-
-def get_data_all(handle_stocks):
-    """Join all DataFrame by stocks and fitering by month"""
-    merge_stock = []
-    StockMonth = namedtuple('StockMonth',
-                            'stock_id, revenue, profit')
-    dict_profut = {item.stock_id: item.profit for item in handle_stocks}
-    profit_merge = pandas.DataFrame(dict_profut)
-    dict_revenue = {item.stock_id: item.revenue for item in handle_stocks}
-    revenue_merge = pandas.DataFrame(dict_revenue)
-    # profit_merge = profit_merge.fillna(0)
-    # revenue_merge = revenue_merge.fillna(0)
-    for item in handle_stocks:
-        stock = StockMonth(
-            stock_id=item.stock_id,
-            profit=profit_merge[item.stock_id],
-            revenue=revenue_merge[item.stock_id]
-         )
-        merge_stock.append(stock)
-    return merge_stock
-
-
-def calculate_total(all_data, sort_profit):
-    if sort_profit:
-        total = sum([item.profit for item in all_data])
-    if not sort_profit:
-        total = sum([item.revenue for item in all_data])
-    total_round = [round(item, 2) for item in total]
-    return total_round
-
-
-def get_stock(stock_id, start_date):
-    """"""
-    end = datetime.date.today()
+def get_stock_data(stock_id, start_date, revenue):
+    """Function for obtaining data on each share
+    Args:
+        stock_id (string) the name of the dataset (by stock)
+        start_date (datetime) left boundary for range period
+        revenue (float) invested money per stock
+    Return:
+        DataFrame object with new column 'profit' and 'revenue', and
+        aggregated per month
+    """
     try:
-        start = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-        stock = web.DataReader(stock_id, 'yahoo', start, end)
+        start = datetime.datetime.strptime(
+            start_date, '%Y-%m-%d'
+        ) + datetime.timedelta(days=1)
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
     except RemoteDataError as e:
-        stock = web.DataReader(stock_id, 'yahoo', start, end)
+        raise RequestError(e)
     except (TypeError, ValueError) as e:
-        raise e
-    return stock.Close
+        raise RequestError(e)
+    stock = data_stock.Close.to_frame()
+    stock["profit"] = revenue * ((stock.Close - stock.Close[0]) / stock.Close)
+    stock["revenue"] = stock.profit + revenue
+    print(stock_id, stock)
+    return stock.groupby(pandas.Grouper(freq='BM')).mean()
+
+    # Alternatives
+    # return stock.resample('BM').mean()
+    # stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
+    # (It's deprecated in favor of just pd.Grouper)
+    #  stocks.resample('M').mean()
+
+
+def get_final_frame(parse_data):
+    """Function for creating the final DateFrame for show data in diagramm
+    Args:
+        parse_data(list) handle data from form
+    Return
+        DataFrame object with new column 'total_profit' and 'total_revenue',
+        and columns by closing price of each stock item
+    """
+    StockHandle = namedtuple('StockHandle', 'stock_id, stock')
+
+    all_stocks = [
+        StockHandle(
+            stock_id=item.stock_id,
+            stock=get_stock_data(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse_data
+    ]
+    print('row stocks\n', all_stocks)
+    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+                              for item in all_stocks})
+
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    print('all close price with period\n', stocks)
+    # get all revenue from stocks and sum this
+    all_revenue = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks})
+    stocks['total_revenue'] = all_revenue.sum(axis=1, skipna=True)
+    # get all profit from stocks and sum this
+    all_profit = pandas.DataFrame(
+        {item.stock_id: item.stock.profit for item in all_stocks}
+    )
+    stocks['total_profit'] = all_profit.sum(axis=1, skipna=True)
+
+    print('all revenue\n', all_revenue)
+    print('all profit\n', all_profit)
+    return stocks.round(2)

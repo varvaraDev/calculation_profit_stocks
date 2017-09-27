@@ -1,112 +1,58 @@
 """Starting module for web application."""
 
 from flask import Flask, render_template, request
-from highcharts import Highchart
-
+from handle_exceptions import RequestError
 from stocks_portfolio import (
-    parse_str,
-    row_stocks,
-    calculate_profit_revenue,
-    get_data_all,
-    calculate_total
+    parse_form,
+    get_final_frame
     )
 
 app = Flask(__name__)
 
 
+@app.errorhandler(RequestError)
+def handle_invalid_usage(error):
+    mess = error.get_data()
+    return render_template(
+           'error.html',
+           message=mess
+        )
+
+
 @app.route('/stocks', methods=['GET', 'POST'])
 def stocks():
     """Maim function for calculate profil of stocks.
-
     Args:
-        response (html) response for get request,
-        by get data of stocks with form.
-        form (string) Data of forms textarea
-        row (string) resul parse of data
-        handle_stock (list) List of frame objects by stocks
-        result (list) treated data on shares
-        total_profit, total_revenue (obj) - result profit and revenue of
-        all_data
-
+        parse_form (string) parse data from form
+        id_stocks (string) id by stocks
+        result (DateFrame) table with handle stocks
+        stock_close (list) closing price of each stock item
     """
     if request.method == 'GET':
-        response = """
-            <html>
-            <head>
-            <meta charset="utf-8">
-            <title>Handling stocks</title>
-            </head>
-            <body>
-            <form action='/stocks' method="post">
-                <p><b>Input you portfolio:</b></p>
-                <p>
-                <textarea name="textcontent" rows="10" cols="45"></textarea>
-                </p>
-                <p><input type="submit" value="Send"></p>
-            </form>
-                </body>
-            </html>
-        """
-        return response
+        return render_template('form.html')
 
     if request.method == 'POST':
-
-        form = request.form["textcontent"]
-        parse_form = parse_str(form)
-        row = row_stocks(parse_form)
-        handle_stock = calculate_profit_revenue(row)
-        result = get_data_all(handle_stock)
-        period = ['{}-{}'.format(str(item.year),
-                  str(item.month)) for item in result[0].revenue.index]
-        total_profit = calculate_total(result, True)
-        total_revenue = calculate_total(result, False)
-        create_diagramm(
-            portfolio=result,
-            total_profit=total_profit,
-            total_revenue=total_revenue,
-            period=period
+        parse = parse_form(request.form["textcontent"])
+        id_stocks = [item.stock_id for item in parse]
+        result = get_final_frame(parse)
+        print('DataFrame with all data\n', result)
+        stock_close = [
+            (
+                id_stock,
+                result[id_stock].tolist()
             )
+            for id_stock in id_stocks]
+        print(stock_close)
 
-        return render_template(
-            'stock_hero.html'
+    return render_template(
+            'stock.html',
+            profit=result.total_profit.tolist(),
+            revenue=result.total_revenue.tolist(),
+            stock_close=stock_close,
+            period=result.period.tolist(),
+            data_form=request.form["textcontent"].split('\r\n')
             )
-
-
-def create_diagramm(portfolio, total_profit, total_revenue, period):
-    """Function created diagramm from the calculated values.
-
-    Args:
-        portfolio (list) - all handle stocks
-        total_profit (list)- aggregated profit by all stocks
-        total_revenue (list)- aggregated revenue by all stocks
-        period - Time season from the date of the first purchase of shares
-
-    Return:
-        html file with crated diagramm
-
-    """
-    H = Highchart()
-    H.set_options('title', {'text': "Calculate profil of stocks"})
-    for item in portfolio:
-        H.add_data_set(item.profit.tolist(), 'line', 'Profit {}'.format(
-            item.stock_id)
-            )
-        H.add_data_set(item.revenue.tolist(), 'line', 'Revenue {}'.format(
-            item.stock_id)
-            )
-    H.add_data_set(total_profit, 'line', 'TOTAL PROFIT')
-    H.add_data_set(total_revenue, 'line', 'TOTAL REVENUE')
-    H.set_options('yAxis', {'title': {'text': 'USD'},
-                  'plotLines': {'value': -250, 'width': 1, 'color': '#808080'},
-                            'tickInterval': 250, 'gridLineWidth': 2,
-                            'min': -500})
-    H.set_options('xAxis', {'categories': period, 'type': 'datetime'})
-    H.set_options('legend', {'layout': 'horizontal',
-                             'align': 'center',
-                             'verticalAlign': 'bottom',
-                             'borderWidth': 0})
-    H.save_file("templates/stock_hero")
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

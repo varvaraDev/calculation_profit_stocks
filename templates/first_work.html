@@ -1,0 +1,92 @@
+<html>
+   <head>
+      <title>Highcharts Tutorial</title>
+      <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+      </script>
+      <script src = "https://code.highcharts.com/highcharts.js"></script>
+   </head>
+
+   <body>
+      <!-- <div id = "container" style = "width: 550px; height: 400px; margin: 0 auto"></div> -->
+      <div id="container" style="">Loading....</div>
+      <script type=text/javascript>
+             var title = {
+                text: 'Calculate portfolio C:'
+             };
+             var subtitle = {
+                text: 'Greating'
+             };
+            //  var stocks = {{ stock_close|tojson }}
+            //  var id_stock = {{stocks_id|tojson }}
+             var xAxis = {
+                categories: {{ period|tojson }}
+             };
+             var yAxis = {
+                title: {
+                   text: 'USD'
+                }
+             };
+             var tooltip = {
+                valueSuffix: '\xB0C'
+             }
+             var legend = {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+             };
+            //  var plotOptions: {
+            //    series: {
+            //      pointStart: 2010
+            //    };
+            //  var series =  [{
+            //        name: 'profit',
+            //        data: {{ profit|tojson }}
+            //     },
+            //     {% for st in stocks %}
+            //     {
+            //        name: {ids},
+            //        data: {st}
+            //     },
+            //     {% endfor %}
+            //     {
+            //        name: 'revenue',
+            //        data: {{ revenue|tojson }}
+            //     },
+            //  ];
+            var array = {{ stock_close|tojson }}
+            var ids = {{stocks_id|tojson }}
+            var series = [],
+               len = array.length,
+               i = 0;
+
+            for(i;i<len;i++){
+               series.push({
+                   name: ids[i],
+                   data: array[i]
+               });
+            }
+             series.push({
+                name: 'Total_profit',
+                data: {{ profit|tojson }}
+              });
+              series.push({
+                 name: 'total_revenue',
+                 data: {{ revenue|tojson }}
+               });
+             var json = {};
+             json.title = title;
+             json.subtitle = subtitle;
+             json.xAxis = xAxis;
+             json.yAxis = yAxis;
+             json.tooltip = tooltip;
+             json.legend = legend;
+             json.series = series;
+            //  json.series = series2;
+            //  json.plotOptions=plotOptions
+
+             $('#container').highcharts(json);
+       </script>
+   </body>
+
+</html>

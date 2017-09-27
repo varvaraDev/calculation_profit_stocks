@@ -81,7 +81,7 @@ def total_earnings_profit(*args):
 def total_earnings_revenue(*args):
     return sum(list(args))
 
-# data = 'AAPL=2016-12-24=1200\r\nGOOG=2001-01-01=50\r\nAMZN=2012-01-01=150'
+# data = 'AAPL=2016-12-24=1200\r\nGOOG=20012-01-01=500\r\nAMZN=2012-01-01=800'
 # d1= data.split('\r\n')
 # parse = [item.split("=") for item in d1]
 # data2 = [{"id": item[0], "data_start": item[1], "rev": item[2]} for item in parse]
@@ -102,7 +102,10 @@ def total_earnings_revenue(*args):
 # gp.groupby(pd.TimeGrouper(freq='Q')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
 # # over weeks
 # gp.groupby(pd.TimeGrouper(freq='W')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
-
+    # <!-- <p><b>Input you portfolio:</b></p>
+    # {% for item in {{portfolio|tojson}} %}
+    # <p><b>{{item}}</b></p>
+    # {% endfor %} -->
 
 def get_profit_all(handle_stocks):
     """Join all DataFrame by stocks and fitering by month"""
@@ -279,5 +282,105 @@ def create_diagramm_test(total_profit, total_revenue, period):
 
 # step 1
 
-qamz = qamz.copy()
-qamz['profit'] = qamz.loc[:,'Close'].apply(profit_collum, args=(round(float(qamz.Close[0]), 2), 500,))
+[all_close[stock.stock_id].head(10) for stock in parse]
+all_close = pandas.DataFrame({item.stock_id: item.stock.Close for item in s1})
+total_profit2['total'] = total_profit2.sum(axis=1)
+total_profit2['period'] = ['{}-{}'.format(str(item.year), str(item.month)) for item in total_profit.index]
+group2 = total_profit2.groupby(['period'])
+
+# new_revenue = prof.apply(revenue_collum, args=(1200,))
+# Get data about projects
+# so we do cumsum over period of time so we can see the growth
+# gp = df.groupby(['period', 'project']).agg({'minutes':'sum'})
+# gp = gp.unstack(level=1)
+# gp.groupby(pd.TimeGrouper(freq='M')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
+# # over quarters
+# gp.groupby(pd.TimeGrouper(freq='Q')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
+# # over weeks
+# gp.groupby(pd.TimeGrouper(freq='W')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
+
+goog.groupby(pd.TimeGrouper(freq='M')).mean()
+# Альтернатива replase
+
+# s1 list about stocks
+s1 = all_stocks(parse)
+all_close = pandas.DataFrame({item.stock_id: item.stock.Close for item in s1})
+all_close['period'] = ['{}-{}'.format(str(item.year),
+                      str(item.month)) for item in all_close.index]
+total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}).fillna(0)
+total_profit = pandas.DataFrame({item.stock_id:item.stock.profit for item in s1}).fillna(0).sum(axis=1)
+all_close['total revenue'] = pandas.DataFrame({item.stock_id: item.stock.revenue for item in s1}).fillna(0).sum(axis=1)
+all_close['total profit'] = pandas.DataFrame({item.stock_id: item.stock.profit for item in s1}).fillna(0).sum(axis=1)
+stock2 = [(id_stock, all_close[id_stock].head(10).tolist()) for id_stock in id_stocks]
+
+
+def all_stocks_ver1(parse_data):
+    StockMonth = namedtuple('StockMonth',
+                            'stock_id, stock')
+    # parse_data = parse_str(form)
+    all_stocks = [
+        StockMonth(
+            stock_id=item.stock_id,
+            stock=get_stock2(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse_data
+    ]
+    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+                              for item in all_stocks})
+
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    stocks['total_revenue'] = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks}
+    ).fillna(0).sum(axis=1)
+    stocks['total_profit'] = pandas.DataFrame(
+        {item.stock_id: item.stock.profit for item in all_stocks}
+    ).fillna(0).sum(axis=1)
+    return stocks.round(2)
+
+
+def all_stocks_debagger(parse_data):
+    StockMonth = namedtuple('StockMonth',
+                            'stock_id, stock')
+    all_stocks = [
+        StockMonth(
+            stock_id=item.stock_id,
+            stock=get_stock2(item.stock_id, item.data_start, item.revenue)
+        ) for item in parse_data
+    ]
+    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+                              for item in all_stocks})
+
+    stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
+                        for item in stocks.index]
+    # get all revenue from stocks and sum this
+    all_revenue = pandas.DataFrame(
+        {item.stock_id: item.stock.revenue for item in all_stocks})
+    stocks['total_revenue'] = all_revenue.fillna(0).sum(axis=1)
+    # get all profit from stocks and sum this
+    all_profit = pandas.DataFrame(
+        {item.stock_id: item.stock.profit for item in all_stocks}
+    )
+    stocks['total_profit'] = all_profit.fillna(0).sum(axis=1)
+
+    print('all_close_price\n', stocks)
+    print('all_revenue\n', all_revenue)
+    print('all_profut\n', all_profit)
+    return stocks.round(2)
+
+
+# stocks['total_profit'] = all_profit.fillna(0).sum(axis=1)
+# stocks['total_revenue'] = all_revenue.fillna(0).sum(axis=1)
+class InvalidUsage(Exception):
+    status_code = 400
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
