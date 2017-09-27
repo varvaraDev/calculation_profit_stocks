@@ -4,3 +4,4 @@ __pycache__/
 .coverage
 *.js
 .python-version
+__pycache__/stocks.cpython-35.pyc
