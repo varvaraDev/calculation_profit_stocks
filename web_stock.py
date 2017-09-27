@@ -1,7 +1,7 @@
 """Starting module for web application."""
 
 from flask import Flask, render_template, request
-from handle_exceptions import RequestError, data_form
+from handle_exceptions import RequestError
 from stocks_portfolio import (
     parse_form,
     get_final_frame
@@ -19,11 +19,6 @@ def handle_invalid_usage(error):
         )
 
 
-@app.route('/foo')
-def get_foo():
-    raise RequestError(ValueError)
-
-
 @app.route('/stocks', methods=['GET', 'POST'])
 def stocks():
     """Maim function for calculate profil of stocks.
@@ -34,8 +29,7 @@ def stocks():
         stock_close (list) closing price of each stock item
     """
     if request.method == 'GET':
-        return render_template('form.html',
-                               data_form=data_form)
+        return render_template('form.html')
 
     if request.method == 'POST':
         parse = parse_form(request.form["textcontent"])

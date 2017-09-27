@@ -30,6 +30,7 @@ def revenue_collums(profit, revenue):
     """
     return profit + revenue
 
+# from calculate import profit_collum, revenue_collums
     # stock["profit"] = stock.Close.apply(
     #     profit_collum,
     #     args=(stock.Close[0], revenue,)

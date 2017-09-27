@@ -6,7 +6,6 @@ import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
 import pandas
 from handle_exceptions import RequestError
-# from calculate import profit_collum, revenue_collums
 
 
 def parse_form(data):
@@ -46,7 +45,7 @@ def get_stock_data(stock_id, start_date, revenue):
         ) + datetime.timedelta(days=1)
         data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
     except RemoteDataError as e:
-        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
+        raise RequestError(e)
     except (TypeError, ValueError) as e:
         raise RequestError(e)
     stock = data_stock.Close.to_frame()
