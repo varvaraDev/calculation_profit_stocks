@@ -102,7 +102,10 @@ def total_earnings_revenue(*args):
 # gp.groupby(pd.TimeGrouper(freq='Q')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
 # # over weeks
 # gp.groupby(pd.TimeGrouper(freq='W')).sum().cumsum().plot.area(alpha=0.75, linewidth=4., figsize=(20, 10))
-
+    # <!-- <p><b>Input you portfolio:</b></p>
+    # {% for item in {{portfolio|tojson}} %}
+    # <p><b>{{item}}</b></p>
+    # {% endfor %} -->
 
 def get_profit_all(handle_stocks):
     """Join all DataFrame by stocks and fitering by month"""

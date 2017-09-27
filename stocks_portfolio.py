@@ -29,7 +29,7 @@ def parse_str(data):
 def get_stock2(stock_id, start_date, revenue):
     """Function for obtaining data on each share
     Args:
-        stock_id (string) - 
+        stock_id (string) -
     """
     end = datetime.date.today()
     try:
