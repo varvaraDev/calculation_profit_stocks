@@ -366,3 +366,7 @@ def all_stocks_debagger(parse_data):
     print('all_revenue\n', all_revenue)
     print('all_profut\n', all_profit)
     return stocks.round(2)
+
+
+# stocks['total_profit'] = all_profit.fillna(0).sum(axis=1)
+# stocks['total_revenue'] = all_revenue.fillna(0).sum(axis=1)

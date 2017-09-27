@@ -1,18 +1,18 @@
 <html>
       <head>
       <meta charset="utf-8">
-      <title>Input data</title>
+      <title>Errors</title>
       </head>
       <body>
-      <form action='/stocks' method="post">
-          <p><b>Input you portfolio:</b></p>
-          <p>
+          <p><b>Opps!</b></p>
+          <p>BIG ERRORE</p>
+          <p>Incorrect input :С</p>
+
+          {{message|tojson|safe}}
+          <p><b>Correct input</b></p>
           <textarea name="textcontent" rows="10" cols="45">
 AAPL=2016-12-24=1200
 GOOG=2001-01-01=50
 AMZN=2012-01-01=150</textarea>
-          </p>
-          <p><input type="submit" value="Send"></p>
-      </form>
           </body>
 </html>
