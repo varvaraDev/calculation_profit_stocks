@@ -5,6 +5,8 @@ class RequestError(Exception):
         message(string) text about error"""
     def __init__(self, error):
         self.message = error.args[0]
+        if isinstance(error, IndexError):
+            self.message = 'Invalid input data'
 
     def get_data(self):
         if self.message.endswith('\u0027'):
@@ -12,8 +14,5 @@ class RequestError(Exception):
         return self.message
 
 
-RemoteDataError_mess = (
-    '''Also, Please check the id stocks and Internet connection.
-     \nThen try again.''',
-    'RemoteDataError'
-)
+RemoteDataError_mess = '''RemoteDataError: Please check the id stocks and
+                          Internet connection. Then try again.'''

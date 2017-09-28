@@ -7,7 +7,7 @@ import pandas
 import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
 
-from handle_exceptions import RemoteDataError_mess, RequestError
+from handle_exceptions import RequestError
 
 
 def parse_form(data):
@@ -63,12 +63,10 @@ def get_stock_data(stock_id, start_date, revenue):
             raise ValueError('''Invalid date: start date should
                              be less than today's date!''')
 
-        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=8)
 
     except RemoteDataError as e:
-        e.args = RemoteDataError_mess
-        raise RequestError(e)
-
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=8)
     except (TypeError, ValueError) as e:
         raise RequestError(e)
 
@@ -81,6 +79,12 @@ def get_stock_data(stock_id, start_date, revenue):
     print(stock_id, stock)
 
     return stock
+
+# Alternatives aggregated by month
+# return stock.resample('BM').mean()
+# stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
+# (It's deprecated in favor of just pd.Grouper)
+#  stocks.resample('M').mean()
 
 
 def get_final_frame(parse_data):
@@ -97,14 +101,12 @@ def get_final_frame(parse_data):
 
     all_stocks = [get_stock_data(item.stock_id, item.data_start, item.revenue
                                  ) for item in parse_data]
-    print('row stocks\n', all_stocks)
+
     stocks = pandas.DataFrame({item.Close.name: item.Close
                               for item in all_stocks})
 
     stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
                         for item in stocks.index]
-    print('all close price with period\n', stocks)
-
     # get all revenue from stocks and sum this
     agg_revenue = pandas.DataFrame([item.revenue for item in all_stocks])
     stocks['total_revenue'] = agg_revenue.aggregate(np.sum)
@@ -112,8 +114,5 @@ def get_final_frame(parse_data):
     # get all profit from stocks and sum this
     agg_profit = pandas.DataFrame([item.profit for item in all_stocks])
     stocks['total_profit'] = agg_profit.aggregate(np.sum)
-
-    print('all revenue\n', agg_revenue)
-    print('all profit\n', agg_profit)
 
     return stocks.round(2)

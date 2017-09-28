@@ -12,12 +12,12 @@
           <p></p>
           <p>Incorrect input</p>
           <p>Check your data</p>
-          {{message|tojson|safe}}
+          <p>{{message|tojson}}</p>
           <p><b>Correct input example</b></p>
           <form action='/stocks' method="get">
           <textarea name="textcontent" rows="10" cols="45">
 AAPL=2016-12-24=1200
-GOOG=2001-01-01=50
+GOOG=2014-01-01=600
 AMZN=2012-01-01=150</textarea>
 <p><input type="submit" value="Okey"></p>
 </form>

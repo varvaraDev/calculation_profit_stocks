@@ -2,20 +2,11 @@
 
 from flask import Flask, render_template, request
 
-from handle_exceptions import RequestError
+from handle_exceptions import RequestError, RemoteDataError_mess
+from pandas_datareader.base import RemoteDataError
 from stocks_portfolio import get_final_frame, parse_form
 
 app = Flask(__name__)
-
-
-@app.errorhandler(RequestError)
-def handle_invalid_usage(error):
-    """Exception Handler for app"""
-    mess = error.get_data()
-    return render_template(
-           'error.html',
-           message=mess
-        )
 
 
 @app.route('/stocks', methods=['GET', 'POST'])
@@ -39,6 +30,7 @@ def stocks():
 
     if request.method == 'POST':
         parse = parse_form(request.form["textcontent"])
+        print(parse)
         id_stocks = [item.stock_id for item in parse]
         result = get_final_frame(parse)
 
@@ -59,6 +51,26 @@ def stocks():
             period=result.period.tolist(),
             data_form=request.form["textcontent"].split('\r\n')
             )
+
+
+@app.errorhandler(RequestError)
+def handle_invalid_usage(error):
+    """Exception Handler for app"""
+    mess = error.get_data()
+    return render_template(
+           'error.html',
+           message=mess
+        )
+
+
+@app.errorhandler(RemoteDataError)
+def handle_remote_data_error(error):
+    """Exception Handler for app"""
+    mess = RemoteDataError_mess.replace('\n', '')
+    return render_template(
+           'error.html',
+           message=mess
+        )
 
 
 if __name__ == "__main__":
