@@ -1,18 +1,26 @@
+<!DOCTYPE HTML PUBLIC>
 <html>
       <head>
       <meta charset="utf-8">
       <title>Errors</title>
       </head>
       <body>
+      <center>
+      <style>
+ </style>
           <p><b>Opps!</b></p>
-          <p>BIG ERRORE</p>
+          <p></p>
           <p>Incorrect input</p>
-          <p>Please, check your date and code by stocks</p>
+          <p>Check your data</p>
           {{message|tojson|safe}}
-          <p><b>Correct input</b></p>
+          <p><b>Correct input example</b></p>
+          <form action='/stocks' method="get">
           <textarea name="textcontent" rows="10" cols="45">
 AAPL=2016-12-24=1200
 GOOG=2001-01-01=50
 AMZN=2012-01-01=150</textarea>
+<p><input type="submit" value="Okey"></p>
+</form>
+          </center>
           </body>
 </html>

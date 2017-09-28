@@ -10,3 +10,10 @@ class RequestError(Exception):
         if self.message.endswith('\u0027'):
             self.message = self.message.replace('\u0027', ' ')
         return self.message
+
+
+RemoteDataError_mess = (
+    '''Also, Please check the id stocks and Internet connection.
+     \nThen try again.''',
+    'RemoteDataError'
+)
