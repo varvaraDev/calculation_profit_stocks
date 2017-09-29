@@ -70,9 +70,11 @@ def get_stock_data(stock_id, start_date, revenue):
     except (TypeError, ValueError) as e:
         raise RequestError(e)
 
-    stock = data_stock.Close.to_frame()
-    stock["profit"] = revenue * ((stock.Close - stock.Close[0]
-                                  ) / stock.Close)
+    return data_stock
+    stock = data_stock
+    stock["profit"] = revenue * ((data_stock.Open - data_stock.Close
+                                  ) / stock.Open)
+    stock["profit"] = data_stock.Open - data_stock.Close
     stock["revenue"] = stock.profit + revenue
     stock = stock.groupby(pandas.Grouper(freq='BM')).mean()
     stock.Close.name = stock_id

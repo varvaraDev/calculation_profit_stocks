@@ -55,7 +55,7 @@ def stocks():
 
 @app.errorhandler(RequestError)
 def handle_invalid_usage(error):
-    """Exception Handler for app"""
+    """Exception Handler exception RequestError for app"""
     mess = error.get_data()
     return render_template(
            'error.html',
@@ -65,7 +65,7 @@ def handle_invalid_usage(error):
 
 @app.errorhandler(RemoteDataError)
 def handle_remote_data_error(error):
-    """Exception Handler for app"""
+    """Exception Handler if invalid id by stocks"""
     mess = RemoteDataError_mess.replace('\n', '')
     return render_template(
            'error.html',
