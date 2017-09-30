@@ -7,10 +7,14 @@
       </script>
       <script src = "https://code.highcharts.com/highcharts.js"></script>
    </head>
-
+      <!-- <div id = "container" style = "width: 550px; height: 400px; margin: 0 auto"></div> -->
    <body>
      {% if name %}
      <h1>Hello {{ name }}!</h1>
+     <textarea name="textcontent" rows="10" cols="45">
+AAPL=2016-12-24=1200
+GOOG=2015-01-01=500
+AMZN=2014-01-01=150</textarea>
       <div id = "container" style = "width: 550px; height: 400px; margin: 0 auto"></div>
       <script language = "JavaScript">
          $(document).ready(function() {

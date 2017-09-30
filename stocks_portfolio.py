@@ -2,27 +2,38 @@
 import datetime
 from collections import namedtuple
 
+import numpy as np
+import pandas
 import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
-import pandas
+
 from handle_exceptions import RequestError
 
 
 def parse_form(data):
     """Parsing input values from form.
+
     Args:
-        data (string) data from forb by get requsest
+        data (string) data from form by get requsest.
+        StockData (namedtuple) class for store data.
+
     Return:
-        objects StockData for get data about stock
+        parse_item (list) list of objects StockData.
+
+    Raises:
+        RequestError: If input data is invalid and raise exceptions
+                      when processing.
+
     """
-    parse_data = data.split('\r\n')
-    parse = [item.split("=") for item in parse_data]
+    parse = [item.split("=") for item in data.split('\r\n')]
     StockData = namedtuple('StockData', 'stock_id, data_start, revenue')
     try:
         parse_item = [StockData(item[0], item[1], float(item[2]))
                       for item in parse]
+
     except (TypeError, ValueError, IndexError, AttributeError) as e:
         raise RequestError(e)
+
     return parse_item
 
 
@@ -35,62 +46,73 @@ def get_stock_data(stock_id, start_date, revenue):
     Return:
         DataFrame object with new column 'profit' and 'revenue', and
         aggregated per month
+
+    Return:
+        stock (DataFrame) object with new column 'profit' and 'revenue', and
+        aggregated per month.
+
+    Raises:
+        RequestError: If input data is invalid and raise exceptions
+                      when processing or raise exception RemoteDataError
+                      from pandas_datareader.
     """
     try:
         start = datetime.datetime.strptime(
             start_date, '%Y-%m-%d'
         ) + datetime.timedelta(days=1)
-        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=10)
+        if start > datetime.datetime.today():
+            raise ValueError('''Invalid date: start date should
+                             be less than today's date!''')
+
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=8)
+
     except RemoteDataError as e:
-        raise RequestError(e)
+        data_stock = web.DataReader(stock_id, 'yahoo', start, retry_count=8)
     except (TypeError, ValueError) as e:
         raise RequestError(e)
-    stock = data_stock.Close.to_frame()
-    stock["profit"] = revenue * ((stock.Close - stock.Close[0]) / stock.Close)
-    stock["revenue"] = stock.profit + revenue
-    print(stock_id, stock)
-    return stock.groupby(pandas.Grouper(freq='BM')).mean()
 
-    # Alternatives
-    # return stock.resample('BM').mean()
-    # stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
-    # (It's deprecated in favor of just pd.Grouper)
-    #  stocks.resample('M').mean()
+    stock = data_stock.Close.to_frame()
+    stock["profit"] = revenue * ((stock.Close - stock.Close[0]
+                                  ) / stock.Close)
+    stock["revenue"] = stock.profit + revenue
+    stock = stock.groupby(pandas.Grouper(freq='BM')).mean()
+    stock.Close.name = stock_id
+    print(stock_id, stock)
+
+    return stock
+
+# Alternatives aggregated by month
+# return stock.resample('BM').mean()
+# stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
+# (It's deprecated in favor of just pd.Grouper)
+#  stocks.resample('M').mean()
 
 
 def get_final_frame(parse_data):
+
     """Function for creating the final DateFrame for show data in diagramm
+
     Args:
         parse_data(list) handle data from form
     Return
         DataFrame object with new column 'total_profit' and 'total_revenue',
         and columns by closing price of each stock item
     """
-    StockHandle = namedtuple('StockHandle', 'stock_id, stock')
 
-    all_stocks = [
-        StockHandle(
-            stock_id=item.stock_id,
-            stock=get_stock_data(item.stock_id, item.data_start, item.revenue)
-        ) for item in parse_data
-    ]
-    print('row stocks\n', all_stocks)
-    stocks = pandas.DataFrame({item.stock_id: item.stock.Close
+    all_stocks = [get_stock_data(item.stock_id, item.data_start, item.revenue
+                                 ) for item in parse_data]
+
+    stocks = pandas.DataFrame({item.Close.name: item.Close
                               for item in all_stocks})
 
     stocks['period'] = ['{}-{}'.format(str(item.year), str(item.month))
                         for item in stocks.index]
-    print('all close price with period\n', stocks)
     # get all revenue from stocks and sum this
-    all_revenue = pandas.DataFrame(
-        {item.stock_id: item.stock.revenue for item in all_stocks})
-    stocks['total_revenue'] = all_revenue.sum(axis=1, skipna=True)
-    # get all profit from stocks and sum this
-    all_profit = pandas.DataFrame(
-        {item.stock_id: item.stock.profit for item in all_stocks}
-    )
-    stocks['total_profit'] = all_profit.sum(axis=1, skipna=True)
+    agg_revenue = pandas.DataFrame([item.revenue for item in all_stocks])
+    stocks['total_revenue'] = agg_revenue.aggregate(np.sum)
 
-    print('all revenue\n', all_revenue)
-    print('all profit\n', all_profit)
+    # get all profit from stocks and sum this
+    agg_profit = pandas.DataFrame([item.profit for item in all_stocks])
+    stocks['total_profit'] = agg_profit.aggregate(np.sum)
+
     return stocks.round(2)

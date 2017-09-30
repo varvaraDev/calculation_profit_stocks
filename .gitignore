@@ -5,4 +5,7 @@ __pycache__/
 .coverage
 *.js
 .python-version
+<<<<<<< HEAD
 __pycache__/stocks.cpython-35.pyc
+cache.sqlite
+*.sqlite
