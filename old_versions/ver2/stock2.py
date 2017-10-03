@@ -33,12 +33,12 @@ def parse_form(data):
 
     except (TypeError, ValueError, IndexError, AttributeError) as e:
         raise RequestError(e)
-    # global parse_item
+
     return parse_item
 
 
-def get_stock_data(stock_id, start_date):
-    """Function return DataFrame by stock
+def get_stock_data(stock_id, start_date, revenue):
+    """Function for obtaining data on each share
 
     Args:
         stock_id (string) the name of the dataset (by stock).
@@ -71,72 +71,17 @@ def get_stock_data(stock_id, start_date):
         raise RequestError(e)
 
     return data_stock
+    stock = data_stock
+    stock["profit"] = revenue * ((data_stock.Open - data_stock.Close
+                                  ) / stock.Open)
+    stock["profit"] = data_stock.Open - data_stock.Close
+    stock["revenue"] = stock.profit + revenue
+    stock = stock.groupby(pandas.Grouper(freq='BM')).mean()
+    stock.Close.name = stock_id
+    print(stock_id, stock)
 
+    return stock
 
-def add_profit_revenue(data_stock, id_stock, revenue):
-    # data_stock["profit"] = revenue / data_stock.Open * (
-    #                        data_stock.Close - data_stock.Open)
-    # # data_stock["profit"] = data_stock.Open - data_stock.Close
-    # data_stock["revenue"] = data_stock.profit + revenue
-    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
-    stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
-    stock['ID'] = id_stock
-    # data_stock.Close.name = stock_id
-    # print(data_stock)
-    return stock.reset_index().set_index(['Date', 'ID'])
-
-
-def reindex(data_stock, id_stock, revenue):
-    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
-    data_stock = data_stock.reset_index().set_index('Date', 'ID')
-    data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
-    return data_stock
-
-parse = parse_form('AAPL=2017-06-24=1200\r\nGOOG=2017-03-01=50\r\nAMZN=2017-01-01=150')
-handle_stock = []
-for item in parse:
-    row = get_stock_data(item.stock_id, item.data_start)
-    handle = add_profit_revenue(row, item.stock_id, item.revenue)
-    handle_stock.append(handle)
-result = handle_stock[0].append(handle_stock[1:])
-result['profit'] = result.count_stocks * (result.Close - result.Open)
-row_stock = []
-for item in parse:
-    s1 = get_stock_data(item.stock_id, item.data_start, item.revenue)
-    row_stock.append(s1)
-
-total = [row_stock[0].append(item) for item in row_stock]
-
-add_collum = []
-
-for item in row_stock
-
-
-def add_profit_revenue(data_stock, revenue):
-    # data_stock["profit"] = revenue / data_stock.Open * (
-    #                        data_stock.Close - data_stock.Open)
-    # # data_stock["profit"] = data_stock.Open - data_stock.Close
-    # data_stock["revenue"] = data_stock.profit + revenue
-    data_stock['ID'] = id_stock
-    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
-    data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
-    # data_stock.Close.name = stock_id
-    # print(data_stock)
-    return data_stock
-
-
-
-
-# Для получения периода (индеком становится дата)
-f.profit.unstack(level=1)
-
-# Для получения среза по ID
-f.xs('GOOG', level='ID')
-# Для получения total_profit
- f.profit.unstack(level=1).sum(axis=1, skipna=True)
-
-# groupby by date
-f.profit.reset_index()
 # Alternatives aggregated by month
 # return stock.resample('BM').mean()
 # stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
