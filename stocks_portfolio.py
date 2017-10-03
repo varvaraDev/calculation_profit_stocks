@@ -100,6 +100,8 @@ for item in parse:
     handle_stock.append(handle)
 result = handle_stock[0].append(handle_stock[1:])
 result['profit'] = result.count_stocks * (result.Close - result.Open)
+
+result['profit'] = result.count_stocks * result.Open + (result.Close - result.Open)
 row_stock = []
 for item in parse:
     s1 = get_stock_data(item.stock_id, item.data_start, item.revenue)
