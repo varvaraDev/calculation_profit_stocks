@@ -59,7 +59,7 @@ def get_stock_data(stock_id, start_date, revenue):
     try:
         start = datetime.datetime.strptime(
             start_date, '%Y-%m-%d'
-        ) + datetime.timedelta(days=1)
+            ) + datetime.timedelta(days=1)
         if start > datetime.datetime.today():
             raise ValueError('''Invalid date: start date should
                              be less than today's date!''')
