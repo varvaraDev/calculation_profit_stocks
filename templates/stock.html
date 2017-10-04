@@ -18,9 +18,10 @@
                       text: 'Name stocks - show closing price of each stock item'
                 };
 
-              var xAxis = {
-                  categories: {{ period|tojson }}
-                };
+                var xAxis = {
+                    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                  };
+
 
               var yAxis = {
                 title: {
@@ -51,26 +52,27 @@
                    }
                 }
 
-              var array = {{ stock_close|tojson }}
-              var series = [],
-                 len = array.length
 
-              array.forEach(function(item, array) {
-                    series.push( {
-                        name: item[0],
-                        data: item[1],
-                        dashStyle: 'longdash'
-                    } );
-                 });
+            var series = []
+            var array = {{id_stocks|tojson}}
+            len = array.length
+
+         array.forEach(function(item, array) {
+               series.push( {
+                   name: item,
+                   data: {{ result.xs(item, level='ID').Close.tolist()|tojson }},
+                   dashStyle: 'longdash'
+               } );
+            });
 
               series.push({
                   name: 'Total profit',
-                  data: {{ profit|tojson }},
+                  data: {{ result.profit.unstack(level=1).sum(axis=1, skipna=True).tolist()|tojson }},
                 });
 
               series.push({
                  name: 'Total revenue',
-                 data: {{ revenue|tojson }},
+                 data: {{ result.revenue.unstack(level=1).sum(axis=1, skipna=True).tolist()|tojson }},
 
                });
 

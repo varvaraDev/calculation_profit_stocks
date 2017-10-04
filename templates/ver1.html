@@ -7,7 +7,7 @@
    </head>
 
    <body>
-      <div id="container" style="">Loading....</div>
+      <div id="container" style = "width:100% height: 400px; margin: 0 auto">Loading....</div>
       <script type=text/javascript>
 
               var title = {
@@ -17,7 +17,11 @@
               var subtitle = {
                       text: 'Name stocks - show closing price of each stock item'
                 };
-s
+
+    
+                var xAxis = {
+                    categories: {{['{}-{}'.format(str(item.year), str(item.month)) for item in result.reset_index().Date.tolist()]| safe}}
+                  };
 
               var yAxis = {
                 title: {
@@ -50,27 +54,19 @@ s
 
 
               var stock_id= id_stocks
-              var result= {{result|tojson|safe}}
-              // var array = {{ result|tojson }}
+              var result1= {{result.revenue.tolist()|tojson|safe}}
+              var result2= {{result.profit.tolist()|tojson|safe}}
               var series = [],
                  len = array.length
 
-              array.forEach(function(item, stock_id) {
-                    series.push( {
-                        name: item,
-                        data: {{ result.xs(item, level='ID').Close.tolist()|tojson }},
-                        dashStyle: 'longdash'
-                    } );
-                 });
-
               series.push({
                   name: 'Total profit',
-                  data: {{ result.profit_all.unstack(level=1).sum(axis=1, skipna=True).tolist()|tojson }},
+                  data: result2,
                 });
 
               series.push({
                  name: 'Total revenue',
-                 data: {{ result.revenue.unstack(level=1).sum(axis=1, skipna=True).tolist()|tojson }},
+                 data: result1,
 
                });
 
@@ -95,17 +91,3 @@ s
   </body>
 
 </html>
-
-
-var stock_id= {{ [it for it in result.index.levels[1]]|tojson }}
-// var array = {{ result|tojson }}
-var series = [],
-   len = array.length
-
-array.forEach(function(item, stock_id) {
-      series.push( {
-          name: item,
-          data: {{ result.xs(item, level='ID').Close.tolist()|tojson }},
-          dashStyle: 'longdash'
-      } );
-   });

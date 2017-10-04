@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 
 from handle_exceptions import RequestError, RemoteDataError_mess
 from pandas_datareader.base import RemoteDataError
-from stocks_portfolio import get_final_frame, parse_form
+from stocks_portfolio import main_func, parse_form
 
 app = Flask(__name__)
 
@@ -32,23 +32,32 @@ def stocks():
         parse = parse_form(request.form["textcontent"])
         print(parse)
         id_stocks = [item.stock_id for item in parse]
-        result = get_final_frame(parse)
+        result = main_func(parse)
+        print(result)
+        print(result.Close.tolist())
+        print(result.profit.tolist())
+        print(id_stocks)
+        # period = {['{}-{}'.format(str(item.year), str(item.month)) for item in result.reset_index().Date.tolist()]}
 
-        stock_close = [
-            (
-                id_stock,
-                result[id_stock].tolist()
-            ) for id_stock in id_stocks]
+        # stock_close = [
+        #     (
+        #         id_stock,
+        #         result[id_stock].tolist()
+        #     ) for id_stock in id_stocks]
 
-        print('DataFrame with all data\n', result)
-        print('For serias\n', stock_close)
+        # print('DataFrame with all data\n', result)
+        # print('For serias\n', stock_close)
 
     return render_template(
             'stock.html',
-            data=result,
+            stock_id=id_stocks,
+            result=result,
             data_form=request.form["textcontent"].split('\r\n')
             )
 
+# result.xs('GOOG', level='ID').profit_all.tolist()
+#
+# result.xs('GOOG', level='ID').revenue.tolist()
     # return render_template(
     #         'stock.html',
     #         profit=result.total_profit.tolist(),

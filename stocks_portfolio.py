@@ -50,7 +50,7 @@ def get_stock_data(stock_id, start_date):
     try:
         start = datetime.datetime.strptime(
             start_date, '%Y-%m-%d'
-        ) + datetime.timedelta(days=1)
+         ) + datetime.timedelta(days=1)
         if start > datetime.datetime.today():
             raise ValueError('''Invalid date: start date should
                              be less than today's date!''')
@@ -65,12 +65,12 @@ def get_stock_data(stock_id, start_date):
     return data_stock
 
 
-def add_profit_revenue(data_stock, id_stock, revenue):
+def handle_stock(data_stock, id_stock, revenue):
     # data_stock["profit"] = revenue / data_stock.Open * (
     #                        data_stock.Close - data_stock.Open)
     # # data_stock["profit"] = data_stock.Open - data_stock.Close
     # data_stock["revenue"] = data_stock.profit + revenue
-    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
+    data_stock["count_stocks"] = revenue / data_stock.Open
     stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
     stock['ID'] = id_stock
     # data_stock.Close.name = stock_id
@@ -84,26 +84,30 @@ def reindex(data_stock, id_stock, revenue):
     data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
     return data_stock
 
-parse = parse_form('AAPL=2017-06-24=1200\r\nGOOG=2017-03-01=50\r\nAMZN=2017-01-01=150')
-handle_stock = []
-for item in parse:
-    row = get_stock_data(item.stock_id, item.data_start)
-    handle = add_profit_revenue(row, item.stock_id, item.revenue)
-    handle_stock.append(handle)
-result = handle_stock[0].append(handle_stock[1:])
-result['profit'] = result.count_stocks * (result.Close - result.Open)
+def main_func(parse):
+    list_stock = []
+    for item in parse:
+        row = get_stock_data(item.stock_id, item.data_start)
+        handle = handle_stock(row, item.stock_id, item.revenue)
+        list_stock.append(handle)
+    result = list_stock[0].append(list_stock[1:])
+    result['profit'] = result.count_stocks * (result.Open - result.Close)
+    result['revenue'] = result.count_stocks * result.Open + result.profit
+    return result
+# result['profit'] = result.count_stocks * (result.Close - result.Open)
+#
+# result['profit'] = result.Close - result.Open
+# #
+# result['profit'] = result.count_stocks * result.Open + (result.Close - result.Open)
+# row_stock = []
+# for item in parse:
+#     s1 = get_stock_data(item.stock_id, item.data_start, item.revenue)
+#     row_stock.append(s1)
+#
+# total = [row_stock[0].append(item) for item in row_stock]
+#
+# add_collum = []
 
-result['profit'] = result.count_stocks * result.Open + (result.Close - result.Open)
-row_stock = []
-for item in parse:
-    s1 = get_stock_data(item.stock_id, item.data_start, item.revenue)
-    row_stock.append(s1)
-
-total = [row_stock[0].append(item) for item in row_stock]
-
-add_collum = []
-
-for item in row_stock
 
 
 def add_profit_revenue(data_stock, revenue):
@@ -122,21 +126,22 @@ def add_profit_revenue(data_stock, revenue):
 
 
 # Для получения периода (индеком становится дата)
-f.profit.unstack(level=1)
+# f.profit.unstack(level=1)
 
 # Для получения среза по ID
-f.xs('GOOG', level='ID')
+# f.xs('GOOG', level='ID')
 # Для получения total_profit
- f.profit.unstack(level=1).sum(axis=1, skipna=True)
+ # f.profit.unstack(level=1).sum(axis=1, skipna=True)
 
 # groupby by date
-f.profit.reset_index()
+# f.profit.reset_index()
 # Alternatives aggregated by month
 # return stock.resample('BM').mean()
 # stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
 # (It's deprecated in favor of just pd.Grouper)
 #  stocks.resample('M').mean()
 
+# ['{}-{}'.format(str(item.year), str(item.month)) for item in result.reset_index().Date.tolist()]
 
 def get_final_frame(parse_data):
     """Function create the final DateFrame for show data in diagramm
