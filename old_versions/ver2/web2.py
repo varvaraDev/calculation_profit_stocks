@@ -45,18 +45,12 @@ def stocks():
 
     return render_template(
             'stock.html',
-            data=result,
+            profit=result.total_profit.tolist(),
+            revenue=result.total_revenue.tolist(),
+            stock_close=stock_close,
+            period=result.period.tolist(),
             data_form=request.form["textcontent"].split('\r\n')
             )
-
-    # return render_template(
-    #         'stock.html',
-    #         profit=result.total_profit.tolist(),
-    #         revenue=result.total_revenue.tolist(),
-    #         stock_close=stock_close,
-    #         period=result.period.tolist(),
-    #         data_form=request.form["textcontent"].split('\r\n')
-    #         )
 
 
 @app.errorhandler(RequestError)
