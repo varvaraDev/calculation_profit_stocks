@@ -32,3 +32,40 @@ AMZN=2008-01-01=150
 
 AAPL=2017-05-24=2000
 GOOG=2017-01-01=5000
+
+
+var series = []
+var array = {{result.index.levels[0].tolist()}}
+len = array.length
+console.log(array)
+ array.forEach(function(item, array) {
+           series.push( {
+               name: item,
+               data: {{ result.xs(item, level='ID').Close.tolist()|tojson }},
+               dashStyle: 'longdash'
+           } );
+        });
+
+
+        var series = []
+        var array = {{result.index.levels[0].tolist()|tojson}}
+        len = array.length
+        console.log(array)
+         array.forEach(function(item, array) {
+                   series.push( {
+                      console.log(item)
+                       name: item,
+                       data: {{ result.xs(String(item), level='ID').Close.tolist()|tojson }},
+                       dashStyle: 'longdash'
+                   } );
+                });
+
+
+                array.forEach(function(item, i, array) {
+                          series.push( {
+                            console.log(item)
+                            name: item,
+                            data: {{ result.xs(array[i], level='ID').Close.tolist()|tojson }},
+                            dashStyle: 'longdash'
+                           } );
+                        });

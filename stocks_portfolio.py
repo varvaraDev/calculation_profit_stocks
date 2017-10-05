@@ -75,14 +75,8 @@ def handle_stock(data_stock, id_stock, revenue):
     stock['ID'] = id_stock
     # data_stock.Close.name = stock_id
     # print(data_stock)
-    return stock.reset_index().set_index(['Date', 'ID'])
+    return stock.reset_index().set_index(['ID', 'Date'])
 
-
-def reindex(data_stock, id_stock, revenue):
-    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
-    data_stock = data_stock.reset_index().set_index('Date', 'ID')
-    data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
-    return data_stock
 
 def main_func(parse):
     list_stock = []
@@ -93,7 +87,24 @@ def main_func(parse):
     result = list_stock[0].append(list_stock[1:])
     result['profit'] = result.count_stocks * (result.Open - result.Close)
     result['revenue'] = result.count_stocks * result.Open + result.profit
-    return result
+    return grouper_by_moth(result)
+
+
+def grouper_by_moth(df):
+    return df.groupby([df.index.get_level_values(0)]+[pandas.Grouper(
+                      freq='BM', level=1)]).mean().round(2)
+
+
+def reindex(data_stock, id_stock, revenue):
+    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
+    data_stock = data_stock.reset_index().set_index('Date', 'ID')
+    data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
+    return data_stock
+
+
+
+
+
 # result['profit'] = result.count_stocks * (result.Close - result.Open)
 #
 # result['profit'] = result.Close - result.Open
@@ -110,17 +121,17 @@ def main_func(parse):
 
 
 
-def add_profit_revenue(data_stock, revenue):
-    # data_stock["profit"] = revenue / data_stock.Open * (
-    #                        data_stock.Close - data_stock.Open)
-    # # data_stock["profit"] = data_stock.Open - data_stock.Close
-    # data_stock["revenue"] = data_stock.profit + revenue
-    data_stock['ID'] = id_stock
-    data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
-    data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
-    # data_stock.Close.name = stock_id
-    # print(data_stock)
-    return data_stock
+# def add_profit_revenue(data_stock, revenue):
+#     # data_stock["profit"] = revenue / data_stock.Open * (
+#     #                        data_stock.Close - data_stock.Open)
+#     # # data_stock["profit"] = data_stock.Open - data_stock.Close
+#     # data_stock["revenue"] = data_stock.profit + revenue
+#     data_stock['ID'] = id_stock
+#     data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
+#     data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
+#     # data_stock.Close.name = stock_id
+#     # print(data_stock)
+#     return data_stock
 
 
 
