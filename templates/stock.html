@@ -54,34 +54,29 @@
 
 
             var series = []
-            var array = {{result.index.levels[0].tolist()|tojson}}
-            len = array.length
-            console.log(array)
-            console.log(len)
-
-
-            series.push( {
-              name: 'AAPL',
-              data: {{ result.Close.unstack(level=0)['AAPL'].tolist()|tojson }},
-              dashStyle: 'longdash'
-             } );
-
-             series.push( {
-               name: 'GOOG',
-               data: {{ result.Close.unstack(level=0)['GOOG'].tolist()|tojson }},
-               dashStyle: 'longdash'
-              } );
 
               series.push({
                   name: 'Total profit',
-                  data: {{ result.profit.unstack(level=0).sum(axis=1, skipna=True).tolist()|tojson }},
+                  data: {{ result.profit.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
                 });
 
               series.push({
                  name: 'Total revenue',
-                 data: {{ result.revenue.unstack(level=0).sum(axis=1, skipna=True).tolist()|tojson }},
+                 data: {{ result.revenue.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
 
                });
+
+               var stocks = {{ result.Close.unstack(level=0).to_dict('list')|tojson}}
+               var array = {{result.index.levels[0].tolist()|tojson}}
+               console.log(stocks)
+               console.log(array)
+               array.forEach(function(item, array) {
+                     series.push( {
+                         name: item,
+                         data: stocks[item],
+                         dashStyle: 'longdash'
+                     } );
+                  });
 
               var json = {};
               json.title = title;
@@ -95,20 +90,12 @@
 
              $('#container').highcharts(json);
 
-
-             {% for item in result.index.levels[0].tolist() %}
-             series.push( {
-               name: {{item}},
-               data: {{ result.Close.unstack(level=0)[item].tolist()|tojson }},
-               dashStyle: 'longdash'
-              } );
-             {% endfor %}
-
        </script>
        <p><b>You portfolio:</b></p>
        {% for item in data_form %}
        <p><b>{{item}}</b></p>
        {% endfor %}
+
 
 
 

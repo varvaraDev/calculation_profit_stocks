@@ -34,7 +34,6 @@ def stocks():
         id_stocks = [item.stock_id for item in parse]
         result = main_func(parse)
         print(result)
-        print(id_stocks)
         # period = {['{}-{}'.format(str(item.year), str(item.month)) for item in result.reset_index().Date.tolist()]}
 
         # stock_close = [

@@ -69,3 +69,25 @@ console.log(array)
                             dashStyle: 'longdash'
                            } );
                         });
+
+
+                        series.push( {
+                          name: 'AAPL',
+                          data: {{ result.Close.unstack(level=0)['AAPL'].tolist()|tojson }},
+                          dashStyle: 'longdash'
+                         } );
+
+                         series.push( {
+                           name: 'GOOG',
+                           data: {{ result.Close.unstack(level=0)['GOOG'].tolist()|tojson }},
+                           dashStyle: 'longdash'
+                          } );
+
+
+                          {% for item in result.index.levels[0].tolist()|tojson %}
+                          series.stocks(
+                            name: {item|tojson|safe}
+                            data: {{ result.Close.unstack(level=0)[item].tolist()|tojson|safe}},
+                            dashStyle: 'longdash'
+                           } );
+                          {% endfor %}
