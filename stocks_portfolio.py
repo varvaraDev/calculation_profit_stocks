@@ -29,7 +29,6 @@ def parse_form(data):
 
     except (TypeError, ValueError, IndexError, AttributeError) as e:
         raise RequestError(e)
-    # global parse_item
     return parse_item
 
 
@@ -79,6 +78,11 @@ def handle_stock(data_stock, id_stock, revenue):
     return stock.reset_index().set_index(['ID', 'Date'])
 
 
+def grouper_by_moth(df):
+    return df.groupby([df.index.get_level_values(0)]+[pandas.Grouper(
+                      freq='BM', level=1)]).mean().round(2)
+
+
 def main_func(parse):
     list_stock = []
     for item in parse:
@@ -93,9 +97,7 @@ def main_func(parse):
     return grouper_by_moth(result)
 
 
-def grouper_by_moth(df):
-    return df.groupby([df.index.get_level_values(0)]+[pandas.Grouper(
-                      freq='BM', level=1)]).mean().round(2)
+
 
 
 def reindex(data_stock, id_stock, revenue):

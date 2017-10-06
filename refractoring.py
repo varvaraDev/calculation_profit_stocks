@@ -1,8 +1,8 @@
-* data_stock = web.DataReader(['GOOG', 'AAPL'], 'yahoo', '2017-01-01', retry_count=8)                                                    │
-* data_stock                                                                                                                             │
-* data_stock.head(10)                                                                                                                    │
-* data_stock2 = web.DataReader('GOOG', 'yahoo', '2017-01-01', retry_count=8)                                                             │
-* data_stock2                                                                                                                            │
+* data_stock = web.DataReader(['GOOG', 'AAPL'], 'yahoo', '2017-01-01', retry_count=8)
+* data_stock
+* data_stock.head(10)
+* data_stock2 = web.DataReader('GOOG', 'yahoo', '2017-01-01', retry_count=8)
+* data_stock2
 * data_stock2['ID'] = 'GOOG'                                                                                                             │
 * data_stock2                                                                                                                            │
 * data_stock2.index                                                                                                                      │
@@ -71,13 +71,13 @@ result.unstack(level=0).index.to_period().to_native_types().tolist()
 final_result.index.levels[0].tolist()
 ['AAPL', 'GOOG']
 
-        //     var array = {{id_stocks|tojson}}
-        //     len = array.length
-         //
-        //  array.forEach(function(item, array) {
-        //        series.push( {
-        //            name: item,
-        //            data: {{ result.xs(item, level='ID').Close.tolist()|tojson }},
-        //            dashStyle: 'longdash'
-        //        } );
-        //     });
+
+def test(s):
+    return s.xs('AAPL')
+result.apply(test, axis=0)
+
+Возращается DataFrame, при этом построчно (return работает 10 раз)
+При axis=1 ошибка
+
+
+result.apply(test, axis=0).profit

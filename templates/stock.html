@@ -68,8 +68,7 @@
 
                var stocks = {{ result.Close.unstack(level=0).to_dict('list')|tojson}}
                var array = {{result.index.levels[0].tolist()|tojson}}
-               console.log(stocks)
-               console.log(array)
+
                array.forEach(function(item, array) {
                      series.push( {
                          name: item,
@@ -95,10 +94,7 @@
        {% for item in data_form %}
        <p><b>{{item}}</b></p>
        {% endfor %}
-
-
-
-
+       <p></p>
   </body>
 
 </html>
