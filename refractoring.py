@@ -156,3 +156,31 @@ def xs_revenue(s, parse):
 # stock.groupby(pandas.TimeGrouper(freq='BM')).mean()
 # (It's deprecated in favor of just pd.Grouper)
 #  stocks.resample('M').mean()
+
+# result['profit'] = result.count_stocks * (result.Close - result.Open)
+#
+# result['profit'] = result.Close - result.Open
+# #
+# result['profit'] = result.count_stocks * result.Open + (result.Close - result.Open)
+# row_stock = []
+# for item in parse:
+#     s1 = get_stock_data(item.stock_id, item.data_start, item.revenue)
+#     row_stock.append(s1)
+#
+# total = [row_stock[0].append(item) for item in row_stock]
+#
+# add_collum = []
+
+
+
+# def add_profit_revenue(data_stock, revenue):
+#     # data_stock["profit"] = revenue / data_stock.Open * (
+#     #                        data_stock.Close - data_stock.Open)
+#     # # data_stock["profit"] = data_stock.Open - data_stock.Close
+#     # data_stock["revenue"] = data_stock.profit + revenue
+#     data_stock['ID'] = id_stock
+#     data_stock["count_stocks"] = round(revenue / data_stock.Open, 4)
+#     data_stock = data_stock.groupby(pandas.Grouper(freq='BM')).mean()
+#     # data_stock.Close.name = stock_id
+#     # print(data_stock)
+#     return data_stock

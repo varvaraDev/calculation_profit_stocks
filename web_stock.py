@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 
 from handle_exceptions import RequestError, RemoteDataError_mess
 from pandas_datareader.base import RemoteDataError
-from stocks_portfolio import aggregated_data_stocks, parse_form
+from stocks_portfolio import main_func, parse_form
 
 app = Flask(__name__)
 
@@ -30,43 +30,19 @@ def stocks():
 
     if request.method == 'POST':
         parse = parse_form(request.form["textcontent"])
+        result = main_func(parse, 'Close')
         print(parse)
-        id_stocks = [item.stock_id for item in parse]
-        result = aggregated_data_stocks(parse)
         print(result)
-        # period = {['{}-{}'.format(str(item.year), str(item.month)) for item in result.reset_index().Date.tolist()]}
-
-        # stock_close = [
-        #     (
-        #         id_stock,
-        #         result[id_stock].tolist()
-        #     ) for id_stock in id_stocks]
-
-        # print('DataFrame with all data\n', result)
-        # print('For serias\n', stock_close)
-
     return render_template(
             'stock.html',
             result=result,
             data_form=request.form["textcontent"].split('\r\n')
             )
 
-# result.xs('GOOG', level='ID').profit_all.tolist()
-#
-# result.xs('GOOG', level='ID').revenue.tolist()
-    # return render_template(
-    #         'stock.html',
-    #         profit=result.total_profit.tolist(),
-    #         revenue=result.total_revenue.tolist(),
-    #         stock_close=stock_close,
-    #         period=result.period.tolist(),
-    #         data_form=request.form["textcontent"].split('\r\n')
-    #         )
-
 
 @app.errorhandler(RequestError)
 def handle_invalid_usage(error):
-    """Exception Handler exception RequestError for app"""
+    """Exception Handler exception RequestError for app."""
     mess = error.get_data()
     return render_template(
            'error.html',
@@ -76,7 +52,7 @@ def handle_invalid_usage(error):
 
 @app.errorhandler(RemoteDataError)
 def handle_remote_data_error(error):
-    """Exception Handler if invalid id by stocks"""
+    """Exception Handler if invalid id by stocks."""
     mess = RemoteDataError_mess.replace('\n', '')
     return render_template(
            'error.html',
