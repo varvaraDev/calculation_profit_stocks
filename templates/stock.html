@@ -60,11 +60,12 @@
                   data: {{ result.profit.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
                 });
 
-              series.push({
-                 name: 'Total revenue',
-                 data: {{ result.revenue.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
 
-               });
+               series.push({
+                  name: 'Total revenue',
+                  data: {{ result.revenue.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
+
+                });
 
                var stocks = {{ result.Close.unstack(level=0).to_dict('list')|tojson}}
                var array = {{result.index.levels[0].tolist()|tojson}}

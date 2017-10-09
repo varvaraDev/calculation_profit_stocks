@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 
 from handle_exceptions import RequestError, RemoteDataError_mess
 from pandas_datareader.base import RemoteDataError
-from stocks_portfolio import main_func, parse_form
+from stocks_portfolio import aggregated_data_stocks, parse_form
 
 app = Flask(__name__)
 
@@ -32,7 +32,7 @@ def stocks():
         parse = parse_form(request.form["textcontent"])
         print(parse)
         id_stocks = [item.stock_id for item in parse]
-        result = main_func(parse)
+        result = aggregated_data_stocks(parse)
         print(result)
         # period = {['{}-{}'.format(str(item.year), str(item.month)) for item in result.reset_index().Date.tolist()]}
 
