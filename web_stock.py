@@ -1,7 +1,7 @@
 """Starting module for web application."""
 
 from flask import Flask, render_template, request
-
+import numpy as np
 from handle_exceptions import RequestError, RemoteDataError_mess
 from pandas_datareader.base import RemoteDataError
 from stocks_portfolio import main_func, parse_form
@@ -30,7 +30,7 @@ def stocks():
 
     if request.method == 'POST':
         parse = parse_form(request.form["textcontent"])
-        result = main_func(parse, 'Close')
+        result = main_func(parse, 'Open')
         print(parse)
         print(result)
     return render_template(
@@ -38,7 +38,7 @@ def stocks():
             result=result,
             data_form=request.form["textcontent"].split('\r\n')
             )
-
+# result.profit.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()
 
 @app.errorhandler(RequestError)
 def handle_invalid_usage(error):
