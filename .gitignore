@@ -6,5 +6,3 @@ __pycache__/
 *.js
 .python-version
 __pycache__/stocks.cpython-35.pyc
-cache.sqlite
-*.sqlite
