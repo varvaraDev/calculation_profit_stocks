@@ -1,67 +1,110 @@
 """This module for calculate profit and revenue."""
+import pandas
 
 
-def profit_collum(new_cost, old_cost, revenue):
-    """Calculate profits for stock.
-
-    Args:
-        new_cost - the value in the column 'Close' by table stock
-        profit_percent - profit in percentage terms
-        revenue - dollars invested in share
-
-    Return
-        profit - profit in USD terms
-
-    """
-    profit_percent = (new_cost - old_cost) / new_cost
-    profit = revenue * profit_percent
-    return profit
-
-
-def revenue_collums(profit, revenue):
-    """Calculate revenue for every date for object Serial.
+def grouper_by_moth(df):
+    """Return DataFrame aggregated by month and round.
 
     Args:
-        profit - values from result profit_collum
-        revenue - dollars invested in share
+        df (DateFrame) frame for grouping
+        id_index (Index) first-level index by df (id stocks)
+        group_by_month (TimeGrouper) specification for a groupby instruction
 
-    Return - update revenue with considering get profit
+    Return:
+        DateFrame group by month (mean) and rounding by 2
 
     """
-<<<<<<< HEAD
-    profit = float(profit)
-    if profit == 0:
-        return revenue
-    revenue_new = profit + revenue
-    return round(revenue_new, 2)
+    id_index = df.index.get_level_values(0)
+    group_by_month = pandas.Grouper(freq='BM', level=1)
+    # get_level_values return a vector of the labels for each location at a
+    # particular level
+    return df.groupby([id_index, group_by_month]).mean().round(2)
 
 
-def profit_collum2(new_cost, old_cost, revenue):
-    """Calculate profits for stock in procent.
+def count_revenue_apply(s, parse):
+    """Create column revenue.
+
+    Note:
+        Add revenue by stock in profit. For apply
 
     Args:
-        new_cost - the value in the column 'Close' by table stock
-        profit_percent - profit in percentage terms
-        revenue - dollars invested in share
+        s (Serias) input table
+        revenue (list) list for store data by each stock
 
-    Return
-        profit - profit in USD terms
+    Return:
+        Aggregated Serias by each stock
 
     """
-    new_cost = float(new_cost)
-    profit_percent = (new_cost - old_cost) / new_cost
-    return round(profit_percent, 2)
-=======
-    return profit + revenue
+    revenue = []
+    for item in parse:
+        revenue.append(
+            s.xs(item.stock_id, drop_level=False) + item.revenue
+         )
+    return revenue[0].append(revenue[1:])
 
-# from calculate import profit_collum, revenue_collums
-    # stock["profit"] = stock.Close.apply(
-    #     profit_collum,
-    #     args=(stock.Close[0], revenue,)
-    # )
 
-    # stock["profit"] = stock.Close.apply(
-    #     profit_collum,
-    #     args=(stock.Close[0], revenue,)
-    # )
->>>>>>> c967187a54987e652530d1ff672645e73f88007a
+'**********************************************************************'
+'Other versions (use functions)'
+
+
+def count_stock_func(data_stock, parse):
+    """Function for calculate count stock
+
+    Return object Series for new column"""
+    count_stocks = []
+    for item in parse:
+        price = data_stock.Close.xs(item.stock_id, drop_level=False)
+        count = item.revenue / price[0]
+        c = pandas.Series(count, index=price.index)
+        count_stocks.append(c)
+    return count_stocks[0].append(count_stocks[1:])
+
+
+def count_revenue_func(data_stock, parse):
+    """Create column revenue.
+
+    Note:
+        Add revenue by stock in profit. For apply
+
+    Args:
+        s (Serias) input table
+        revenue (list) list for store data by each stock
+
+    Return:
+        Aggregated Serias by each stock
+
+    """
+    revenue = []
+    for item in parse:
+        revenue.append(
+            data_stock.profit.xs(
+                item.stock_id, drop_level=False
+             ) + item.revenue
+         )
+    return revenue[0].append(revenue[1:])
+
+
+def count_profit_xs(df, parse):
+    """Calculate profit collumn:
+    count purchased stocks by a given field."""
+    profit = []
+    for item in parse:
+        df_stock = df.xs(item.stock_id, drop_level=False)
+        price = df_stock.Close[0]
+        profit.append(
+            (item.revenue / price) * (df_stock.Open - df_stock.Close)
+         )
+    return profit[0].append(profit[1:])
+
+
+def revenue_other(df, parse):
+    """Function count revenue for each stock.
+
+    Not use collumn 'count_stock'"""
+    revenue = []
+    for item in parse:
+        df_stock = df.xs(item.stock_id, drop_level=False)
+        price = df_stock.Close[0]
+        rev = df_stock.profit * (item.revenue / price) + item.revenue
+        revenue.append(rev)
+    return revenue[0].append(revenue[1:])
