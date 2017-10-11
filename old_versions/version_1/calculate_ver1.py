@@ -130,3 +130,27 @@ def revenue_count_apply(s, parse, Open, count):
         revenue.append(s.loc[slice(item.stock_id, item.stock_id), :] +
                        Open.xs(item.stock_id) * count.xs(item.stock_id))
     return revenue[0].append(revenue[1:])
+
+
+def count_stock_change(stock, parse_data, feild):
+    """Calculate count purchased stocks by a given field.
+    If count stock is changing every day"""
+    count = []
+    for item in parse_data:
+        count.append(
+            item.revenue / stock[feild].xs(item.stock_id, drop_level=False)
+            )
+    return count[0].append(count[1:])
+
+
+def revenue_count(df, parse, feild):
+    """Calculate revenue for each stock by count stoks
+    1 step - calculate new revenue = count * price (ex. Close)
+    2 step - new revenue add profit
+    """
+    revenue = []
+    for item in parse:
+        r = df[feild].xs(item.stock_id, drop_level=False) * df.count_stocks.xs(item.stock_id,  drop_level=False)
+        i = df.profit.xs(item.stock_id, drop_level=False) + r
+        revenue.append(i)
+    return revenue[0].append(revenue[1:])

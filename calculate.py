@@ -37,23 +37,23 @@ def count_revenue_apply(s, parse):
     """
     revenue = []
     for item in parse:
-            revenue.append(
-                s.xs(item.stock_id, drop_level=False) + item.revenue
-                )
+        revenue.append(
+            s.xs(item.stock_id, drop_level=False) + item.revenue
+         )
     return revenue[0].append(revenue[1:])
 
 
 '**********************************************************************'
-'Other versions'
+'Other versions (use functions)'
 
-def count_stock_func(data_stock, parse, feild_price):
+
+def count_stock_func(data_stock, parse):
     """Function for calculate count stock
 
     Return object Series for new column"""
     count_stocks = []
     for item in parse:
-        price = data_stock[feild_price].xs(item.stock_id, drop_level=False)
-        print
+        price = data_stock.Close.xs(item.stock_id, drop_level=False)
         count = item.revenue / price[0]
         c = pandas.Series(count, index=price.index)
         count_stocks.append(c)
@@ -76,76 +76,35 @@ def count_revenue_func(data_stock, parse):
     """
     revenue = []
     for item in parse:
-            revenue.append(
-                data_stock.profit.xs(item.stock_id, drop_level=False) + item.revenue
-                )
+        revenue.append(
+            data_stock.profit.xs(
+                item.stock_id, drop_level=False
+             ) + item.revenue
+         )
     return revenue[0].append(revenue[1:])
 
 
-
-def count_profit_xs(df, parse, feild):
+def count_profit_xs(df, parse):
     """Calculate profit collumn:
     count purchased stocks by a given field."""
     profit = []
     for item in parse:
         df_stock = df.xs(item.stock_id, drop_level=False)
-        price = df_stock[feild][0]
+        price = df_stock.Close[0]
         profit.append(
             (item.revenue / price) * (df_stock.Open - df_stock.Close)
-            )
+         )
     return profit[0].append(profit[1:])
 
 
-def revenue_other(df, parse, feild):
+def revenue_other(df, parse):
     """Function count revenue for each stock.
 
     Not use collumn 'count_stock'"""
     revenue = []
     for item in parse:
         df_stock = df.xs(item.stock_id, drop_level=False)
-        price_buy = df_stock[feild][0]
-        rev = df_stock.profit * (item.revenue / price_buy) + item.revenue
+        price = df_stock.Close[0]
+        rev = df_stock.profit * (item.revenue / price) + item.revenue
         revenue.append(rev)
-    return revenue[0].append(revenue[1:])
-
-
-def count_stock_change(stock, parse_data, feild):
-    """Calculate count purchased stocks by a given field.
-    If count stock is changing every day"""
-    count = []
-    for item in parse_data:
-        count.append(
-            item.revenue / stock[feild].xs(item.stock_id, drop_level=False)
-            )
-    return count[0].append(count[1:])
-
-
-def revenue_count(df, parse, feild):
-    """Calculate revenue for each stock by count stoks
-    1 step - calculate new revenue = count * price (ex. Close)
-    2 step - new revenue add profit
-    """
-    revenue = []
-    for item in parse:
-        r = df[feild].xs(item.stock_id, drop_level=False) * df.count_stocks.xs(item.stock_id,  drop_level=False)
-        i = df.profit.xs(item.stock_id, drop_level=False) + r
-        revenue.append(i)
-    return revenue[0].append(revenue[1:])
-
-
-def revenue_count_apply(s, parse, Open, count):
-    """Count revenue for each stock."""
-    revenue = []
-    for item in parse:
-        revenue.append(s.xs(item.stock_id, drop_level=False) +
-                       Open.xs(item.stock_id) * count.xs(item.stock_id))
-    return revenue[0].append(revenue[1:])
-
-
-
-def revenue_count_apply(s, parse, Open, count):
-    revenue = []
-    for item in parse:
-        revenue.append(s.loc[slice(item.stock_id, item.stock_id), :] +
-                       Open.xs(item.stock_id) * count.xs(item.stock_id))
     return revenue[0].append(revenue[1:])

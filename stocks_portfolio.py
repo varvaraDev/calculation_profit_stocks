@@ -2,21 +2,16 @@
 import datetime
 from collections import namedtuple
 
-import numpy as np
-import pandas
 import pandas_datareader.data as web
 from pandas_datareader.base import RemoteDataError
-from calculate import (
-    grouper_by_moth,
-    count_revenue_apply,
-    count_stock_func,
-    count_revenue_func
- )
+
+from calculate import (count_revenue_apply, count_revenue_func,
+                       count_stock_func, grouper_by_moth)
 from handle_exceptions import RequestError
 
 
-def main_func(parse, feild_buy):
-    """Function return final DataFrame for diagramm.
+def main_func(parse):
+    """Return final DataFrame for diagramm.
 
     Args:
         parse (list) parsind data from form
@@ -35,7 +30,6 @@ def main_func(parse, feild_buy):
     return grouper_by_moth(result)
 
 
-
 def aggregated_stocks(parse):
     """Function for aggregated DataFrame
 
@@ -51,6 +45,9 @@ def aggregated_stocks(parse):
         row = get_stock_data(item.stock_id, item.data_start)
         handle = handle_stock(row, item.stock_id, item.revenue)
         list_stock.append(handle)
+    if len(list_stock) == 1:
+        list_stock[0].sort_index(inplace=True)
+        return list_stock[0]
     result = list_stock[0].append(list_stock[1:])
     result.sort_index(inplace=True)
     return result
@@ -65,6 +62,9 @@ def get_stock_data(stock_id, start_date):
 
     Return:
         stock (DataFrame) object with data by stock
+
+    Note: Use method fillna (replace None on zero), becouse delete empty values.
+          See stock BTCUSD=X 2016-01-01 5000 (not data 2016 02-11)
 
     Raises:
         RequestError: If input data is invalid and raise exceptions
@@ -86,7 +86,7 @@ def get_stock_data(stock_id, start_date):
     except (TypeError, ValueError) as e:
         raise RequestError(e)
 
-    return data_stock
+    return data_stock.fillna(0)
 
 
 def handle_stock(data_stock, id_stock, revenue):
@@ -100,9 +100,7 @@ def handle_stock(data_stock, id_stock, revenue):
     Return:
         DataFrame with two index - ID and Date, new column 'count stock'
     """
-    data_stock["count_stocks"] = revenue / data_stock.Close[0]
-    print(data_stock.Close[0])
-    print(revenue / data_stock.Close[0])
+    data_stock["count_stocks"] = revenue / data_stock.Open[0]
     data_stock['ID'] = id_stock
     return data_stock.reset_index().set_index(['ID', 'Date'])
 
@@ -136,24 +134,11 @@ def parse_form(data):
 '******************************************************'
 'version 2'
 
+
 def main_func2(parse, feild_buy):
+    """Use function or new column."""
     result = aggregated_stocks(parse)
     result['count_stocks'] = count_stock_func(result, parse, 'Close')
     result['profit'] = result.count_stocks * (result.Open - result.Close)
     result['revenue'] = count_revenue_func(result, parse)
-    return grouper_by_moth(result)
-
-def main_func3(parse, feild_buy):
-    result = aggregated_stocks(parse)
-    result['profit_one'] = result.Open - result.Close
-    result['profit'] = result.count_stocks * result.profit_one
-    result['revenue'] = result.profit.to_frame().apply(
-        count_revenue_ver1,
-        args=(parse,)
-     )
-
-    # result['revenue'] = result.profit.to_frame().apply(
-    #     revenue_count,
-    #     args=(parse, result.Open, result.count_stocks)
-    #  )
     return grouper_by_moth(result)
