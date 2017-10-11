@@ -22,71 +22,69 @@
     categories: {{ result.unstack(level=0).index.to_period().to_native_types().tolist()|tojson }}
   };
 
-      var yAxis = {
-                title: {
-                   text: 'USD'
-                },
-                softMin: -201,
-                tickInterval: 100
-                };
+  var yAxis = {
+    title: {
+      text: 'USD'
+    },
+    softMin: -201,
+    tickInterval: 100
+    };
 
-              var tooltip = {
-                valuePrefix: '$ ',
-                valueSuffix: ' USD'
-                }
+  var tooltip = {
+    valuePrefix: '$ ',
+    valueSuffix: ' USD'
+  }
 
-              var legend = {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom',
-                borderWidth: 0
-                };
+  var legend = {
+    layout: 'horizontal',
+    align: 'center',
+    verticalAlign: 'bottom',
+    borderWidth: 0
+  };
 
-              var plotOptions = {
-               line: {
-                   dataLabels: {
-                       enabled: true
-                      }
-                   }
-                }
+  var plotOptions = {
+    line: {
+    dataLabels: {
+    enabled: true
+      }
+    }
+  }
+
+  var series = []
+
+  series.push({
+    name: 'Total profit',
+    data: {{ result.profit.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
+  });
 
 
-            var series = []
+  series.push({
+    name: 'Total revenue',
+    data: {{ result.revenue.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
+  });
 
-              series.push({
-                  name: 'Total profit',
-                  data: {{ result.profit.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
-                });
+  var stocks = {{ result.Close.unstack(level=0).to_dict('list')|tojson}}
+  var array = {{result.index.levels[0].tolist()|tojson}}
 
+  array.forEach(function(item, array) {
+    series.push( {
+      name: item,
+      data: stocks[item],
+      dashStyle: 'longdash'
+      });
+  });
 
-               series.push({
-                  name: 'Total revenue',
-                  data: {{ result.revenue.unstack(level=0).sum(axis=1, skipna=True).round(2).tolist()|tojson }},
+  var json = {};
+  json.title = title;
+  json.subtitle = subtitle;
+  json.xAxis = xAxis;
+  json.yAxis = yAxis;
+  json.tooltip = tooltip;
+  json.legend = legend;
+  json.series = series;
+  json.plotOptions = plotOptions;
 
-                });
-
-               var stocks = {{ result.Close.unstack(level=0).to_dict('list')|tojson}}
-               var array = {{result.index.levels[0].tolist()|tojson}}
-
-               array.forEach(function(item, array) {
-                     series.push( {
-                         name: item,
-                         data: stocks[item],
-                         dashStyle: 'longdash'
-                     } );
-                  });
-
-              var json = {};
-              json.title = title;
-              json.subtitle = subtitle;
-              json.xAxis = xAxis;
-              json.yAxis = yAxis;
-              json.tooltip = tooltip;
-              json.legend = legend;
-              json.series = series;
-              json.plotOptions = plotOptions;
-
-             $('#container').highcharts(json);
+  $('#container').highcharts(json);
 
   </script>
   <p><b>You portfolio:</b></p>
