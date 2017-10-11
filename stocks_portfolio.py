@@ -129,16 +129,3 @@ def parse_form(data):
     except (TypeError, ValueError, IndexError, AttributeError) as e:
         raise RequestError(e)
     return parse_item
-
-
-'******************************************************'
-'version 2'
-
-
-def main_func2(parse, feild_buy):
-    """Use function or new column."""
-    result = aggregated_stocks(parse)
-    result['count_stocks'] = count_stock_func(result, parse, 'Close')
-    result['profit'] = result.count_stocks * (result.Open - result.Close)
-    result['revenue'] = count_revenue_func(result, parse)
-    return grouper_by_moth(result)

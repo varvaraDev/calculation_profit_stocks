@@ -86,11 +86,12 @@ def count_revenue_func(data_stock, parse):
 
 def count_profit_xs(df, parse):
     """Calculate profit collumn:
+    Note use column count_stock
     count purchased stocks by a given field."""
     profit = []
     for item in parse:
         df_stock = df.xs(item.stock_id, drop_level=False)
-        price = df_stock.Close[0]
+        price = df_stock.Open[0]
         profit.append(
             (item.revenue / price) * (df_stock.Open - df_stock.Close)
          )
@@ -104,7 +105,7 @@ def revenue_other(df, parse):
     revenue = []
     for item in parse:
         df_stock = df.xs(item.stock_id, drop_level=False)
-        price = df_stock.Close[0]
+        price = df_stock.Open[0]
         rev = df_stock.profit * (item.revenue / price) + item.revenue
         revenue.append(rev)
     return revenue[0].append(revenue[1:])
