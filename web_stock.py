@@ -56,8 +56,7 @@ def handle_remote_data_error(error):
     mess = RemoteDataError_mess.replace('\n', '')
     return render_template(
            'error.html',
-           message=mess
-        )
+           message=mess)
 
 
 if __name__ == "__main__":

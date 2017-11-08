@@ -63,7 +63,7 @@ def get_stock_data(stock_id, start_date):
     Return:
         stock (DataFrame) object with data by stock
 
-    Note: Use method fillna (replace None on zero), becouse delete empty values.
+    Note: Use method fillna (replace None on zero), becouse delete empty values
           See stock BTCUSD=X 2016-01-01 5000 (not data 2016 02-11)
 
     Raises:
@@ -73,8 +73,7 @@ def get_stock_data(stock_id, start_date):
     """
     try:
         start = datetime.datetime.strptime(
-            start_date, '%Y-%m-%d'
-         ) + datetime.timedelta(days=1)
+            start_date, '%Y-%m-%d') + datetime.timedelta(days=1)
         if start > datetime.datetime.today():
             raise ValueError('''Invalid date: start date should
                              be less than today's date!''')
